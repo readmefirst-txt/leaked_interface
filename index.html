@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>S.S. ETERNAL MERIDIAN - DECK 3 TERMINAL [LIVE]</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
@@ -20,428 +20,52 @@
             font-family: 'VT323', monospace;
             font-size: 18px;
             line-height: 1.4;
+            height: 100vh;
+            height: 100dvh; /* Soporte para navegadores móviles modernos */
             overflow: hidden;
+            width: 100vw;
         }
 
         #terminal {
             padding: 20px;
-            height: 100vh;
-            overflow-y: auto;
-            animation: flicker 0.15s infinite;
-        }
-
-        @keyframes flicker {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.98;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        .scanline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom,
-                    rgba(0, 255, 0, 0) 50%,
-                    rgba(0, 255, 0, 0.02) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            animation: scan 8s linear infinite;
-        }
-
-        @keyframes scan {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 0 100%;
-            }
-        }
-
-        .glitch {
-            animation: glitch-anim 3s infinite;
-        }
-
-        @keyframes glitch-anim {
-            0% {
-                transform: translate(0);
-            }
-
-            20% {
-                transform: translate(-2px, 2px);
-            }
-
-            40% {
-                transform: translate(-2px, -2px);
-            }
-
-            60% {
-                transform: translate(2px, 2px);
-            }
-
-            80% {
-                transform: translate(2px, -2px);
-            }
-
-            100% {
-                transform: translate(0);
-            }
-        }
-
-        .header {
-            border: 2px solid #0f0;
-            padding: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .error {
-            color: #f00;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-
-            0%,
-            50% {
-                opacity: 1;
-            }
-
-            51%,
-            100% {
-                opacity: 0;
-            }
-        }
-
-        .warning {
-            color: #ff0;
-        }
-
-        .line {
-            margin: 5px 0;
-        }
-
-        #input-line {
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: flicker 0.15s infinite;
             display: flex;
-            margin-top: 20px;
+            flex-direction: column;
         }
 
-        #prompt {
-            color: #0f0;
-        }
-
-        #user-input {
-            background: transparent;
-            border: none;
-            color: #0f0;
-            font-family: 'VT323', monospace;
-            font-size: 18px;
-            outline: none;
-            flex: 1;
-            margin-left: 5px;
-        }
-
-        .cursor {
-            animation: cursor-blink 1s infinite;
-        }
-
-        @keyframes cursor-blink {
-
-            0%,
-            50% {
-                opacity: 1;
+        /* --- PARCHE RESPONSIVE --- */
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px; /* Texto un poco más chico para que quepa más */
             }
 
-            51%,
-            100% {
-                opacity: 0;
+            #terminal {
+                padding: 10px; /* Menos márgenes en celular */
+            }
+
+            .header {
+                font-size: 0.9em;
+                white-space: pre-wrap; /* Permite que el header se rompa si es necesario */
+                word-break: break-all;
+            }
+
+            /* Stack vertical para el input en móviles */
+            #input-line {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #user-input {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 5px;
             }
         }
 
-        .hidden {
-            display: none;
-        }
-
-        .timestamp {
-            color: #0a0;
-            font-size: 14px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="scanline"></div>
-    <div id="terminal">
-        <div class="header glitch">
-            ╔═══════════════════════════════════════════════════════════╗<br>
-            ║ S.S. ETERNAL MERIDIAN - MAINTENANCE TERMINAL v2.4.1 ║<br>
-            ║ DECK 3 - JUNCTION 37 - SENSOR ARRAY [NODE: 0x2F91] ║<br>
-            ║ <span class="error">⚠ UNAUTHORIZED ACCESS DETECTED ⚠</span> ║<br>
-            ╚═══════════════════════════════════════════════════════════╝
-        </div>
-
-        <div class="line timestamp">[2004-06-15 03:47:12 UTC]</div>
-        <div class="line">SYSTEM BOOT... OK</div>
-        <div class="line">LOADING SENSOR DATA...</div>
-        <div class="line"><span class="warning">WARNING: 8/12 THERMAL SENSORS OFFLINE</span></div>
-        <div class="line"><span class="warning">WARNING: ACOUSTIC ANOMALY DETECTED</span></div>
-        <div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-        <div class="line">&nbsp;</div>
-
-        <div class="line">AVAILABLE COMMANDS:</div>
-        <div class="line"> status - Check system status</div>
-        <div class="line"> sensors - View sensor readings</div>
-        <div class="line"> logs - Access maintenance logs</div>
-        <div class="line"> thermal - Thermal camera feed</div>
-        <div class="line"> audio - Audio monitoring</div>
-        <div class="line"> help - Show this menu</div>
-        <div class="line"> exit - Close terminal</div>
-        <div class="line">&nbsp;</div>
-
-        <div id="output"></div>
-
-        <div id="input-line">
-            <span id="prompt">deck3@junction37:~$</span>
-            <input type="text" id="user-input" autofocus>
-            <span class="cursor">█</span>
-        </div>
-    </div>
-
-    <script>
-        const output = document.getElementById('output');
-        const input = document.getElementById('user-input');
-
-        const responses = {
-            'status': `
-<span class="timestamp">[2004-06-15 03:47:19 UTC]</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SYSTEM STATUS - DECK 3 FORWARD SECTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-<span class="error">⚠ CRITICAL ALERTS: 3</span>
-<span class="warning">⚠ WARNINGS: 12</span>
-✓ NOMINAL: 2
-
-Pipe Pressure (Junction 37):    <span class="warning">ANOMALOUS</span>
-Temperature (Section 3-F):        -7°C <span class="error">(UNEXPLAINED DELTA)</span>
-Acoustic Monitoring:              <span class="error">ORGANIC RESONANCE DETECTED</span>
-Motion Sensors (Crawlspace):     <span class="error">MOVEMENT - NON-CREW</span>
-Substance Analysis (Pipe 37-C):  <span class="error">UNKNOWN COMPOUND</span>
-
-Last Maintenance: Torres, M. (06-14 22:47)
-Current Status: <span class="error">CREW MISSING</span>
-
-Type 'sensors' for detailed readings
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
-            'sensors': `
-<span class="timestamp">[2004-06-15 03:47:24 UTC]</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-THERMAL ARRAY - DECK 3 JUNCTION 37
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Sensor 01: OFFLINE
-Sensor 02: 19.2°C
-Sensor 03: 18.8°C
-Sensor 04: <span class="error">OFFLINE</span>
-Sensor 05: <span class="error">OFFLINE</span>
-Sensor 06: 12.1°C  <span class="warning">⚠ COLD SPOT</span>
-Sensor 07: <span class="error">OFFLINE</span>
-Sensor 08: <span class="error">7.3°C   ⚠⚠⚠ CRITICAL ANOMALY</span>
-Sensor 09: <span class="error">OFFLINE</span>
-Sensor 10: 18.1°C
-Sensor 11: <span class="error">OFFLINE</span>
-Sensor 12: <span class="error">OFFLINE</span>
-
-<span class="warning">HEAT SIGNATURE DETECTED IN PIPE SYSTEM</span>
-Shape: ELONGATED (approx. 180cm)
-Movement: YES
-Classification: <span class="error">UNKNOWN - NOT IN DATABASE</span>
-
-Type 'thermal' to access camera feed
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
-            'logs': `
-<span class="timestamp">[2004-06-15 03:47:31 UTC]</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ACCESSING MAINTENANCE LOGS...
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[06-14 22:47] Torres: "Breathing sound in Junction 37"
-[06-15 03:12] Torres: "Temperature drop. Passenger complaints."
-[06-15 14:23] Hendricks: "Black substance. Organic. Numbing effect."
-[06-15 18:09] System: Crawlspace sealed
-[06-16 01:58] Torres: <span class="error">"SAW FINGERS IN CEILING"</span>
-[06-16 02:14] System: Emergency inspection requested
-[06-16 02:47] System: Torres check-in... <span class="error">MISSED</span>
-[06-16 03:12] System: Torres location... <span class="error">UNKNOWN</span>
-[06-16 03:47] <span class="error">YOU: UNAUTHORIZED ACCESS</span>
-
-<span class="warning">WARNING: Last crew member in this section went missing</span>
-<span class="warning">WARNING: This terminal is no longer manned</span>
-<span class="error">WARNING: You should not be here</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
-            'thermal': `
-<span class="timestamp">[2004-06-15 03:47:38 UTC]</span>
-INITIATING THERMAL CAMERA FEED...
-
-<span class="error">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░██░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░██░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░██░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-
-<span class="warning">SHAPE ANALYSIS: Humanoid (estimated height: 2.1m)</span>
-<span class="warning">MOVEMENT: Slow drift towards camera</span>
-<span class="error">ERROR: Shape does not match crew database</span>
-<span class="error">ERROR: Limb count... INCORRECT</span>
-
-<span class="error">FEED TERMINATED - CAMERA OFFLINE</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
-            'audio': `
-<span class="timestamp">[2004-06-15 03:47:45 UTC]</span>
-ACCESSING ACOUSTIC MONITORING SYSTEM...
-
-Microphone Array Status: ACTIVE
-Location: Pipe Junction 37 + Crawlspace
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AUDIO PATTERN ANALYSIS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-<span class="error">⚠ PLAYING LIVE FEED ⚠</span>
-<span class="warning">[Volume adjusted for human hearing range]</span>
-
-[RECORDING - LAST 60 SECONDS]
-
-00:00  <span class="warning">████████ [STATIC NOISE - 72dB] ████████</span>
-00:08  <span class="warning">drip... drip... drip...</span>
-00:12  <span class="error">████ [INTERFERENCE] ████</span>
-00:19  <span class="warning">[BREATHING - SLOW, RHYTHMIC]</span>
-00:27  <span class="error">████ [SIGNAL DEGRADATION] ████</span>
-00:31  <span class="error">[SCRAPING - METAL ON METAL]</span>
-00:38  <span class="error">████████ [STATIC BURST] ████████</span>
-00:44  <span class="error">[WHISPER - UNINTELLIGIBLE]</span>
-00:49  <span class="error">████ [CORRUPTED DATA] ████</span>
-00:52  <span class="error">[WHISPER - "...torres..."]</span>
-00:54  <span class="error">█ [SUBSONIC PULSE - 14Hz] █</span>
-00:56  <span class="error">[WHISPER - "...don't..."] ███ [CLIPPING] ███</span>
-00:58  <span class="error">[MOVEMENT IN PIPE]</span>
-01:00  <span class="error">████████████ [FEED TERMINATED] ████████████</span>
-
-<span class="warning">PATTERN RECOGNITION: Non-mechanical origin</span>
-<span class="error">VOICE ANALYSIS: Does not match any crew member</span>
-<span class="error">FREQUENCY ANOMALY: Subsonic component detected (14 Hz)</span>
-<span class="error">SPEECH FRAGMENT DETECTED: "don't [CORRUPTED]"</span>
-
-<span class="error">⚠ PSYCHOLOGICAL WARNING ⚠</span>
-Exposure to subsonic frequencies may cause:
-- Anxiety
-- Paranoia  
-- Visual hallucinations
-- Feeling of "presence"
-- Auditory hallucinations
-
-<span class="error">RECOMMENDATION: EVACUATE SECTION IMMEDIATELY</span>
-<span class="error">AUDIO FEED DISABLED - SYSTEM LOCKOUT</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-<audio id="pipe-audio" autoplay style="display:none">
-    <source src="PIPE_MONITORING_AUDIO.wav" type="audio/wav">
-</audio>
-`,
-            'help': `
-AVAILABLE COMMANDS:
-  status    - Check system status
-  sensors   - View sensor readings
-  logs      - Access maintenance logs
-  thermal   - Thermal camera feed
-  audio     - Audio monitoring
-  help      - Show this menu
-  exit      - Close terminal
-`,
-            'exit': `
-<span class="error">ERROR: Exit command disabled</span>
-<span class="error">ERROR: Terminal lock engaged</span>
-<span class="error">ERROR: You cannot leave</span>
-
-<span class="warning">The pipes remember</span>
-<span class="warning">The pipes are listening</span>
-<span class="warning">The pipes know you're here</span>
-`
-        };
-
-        let commandHistory = [];
-
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                const command = input.value.trim().toLowerCase();
-
-                if (command) {
-                    // Show command
-                    const cmdLine = document.createElement('div');
-                    cmdLine.innerHTML = `<span class="timestamp">[${new Date().toISOString().slice(0, 19).replace('T', ' ')} UTC]</span><br>deck3@junction37:~$ ${command}`;
-                    output.appendChild(cmdLine);
-
-                    // Show response
-                    const responseLine = document.createElement('div');
-                    if (responses[command]) {
-                        responseLine.innerHTML = responses[command];
-                    } else {
-                        responseLine.innerHTML = `<span class="error">Command not found: ${command}</span>\nType 'help' for available commands`;
-                    }
-                    output.appendChild(responseLine);
-
-                    commandHistory.push(command);
-                }
-
-                input.value = '';
-                terminal.scrollTop = terminal.scrollHeight;
-            }
-        });
-
-        // Auto-scroll
-        const terminal = document.getElementById('terminal');
-        terminal.scrollTop = terminal.scrollHeight;
-
-        // Random glitch effect
-        setInterval(() => {
-            if (Math.random() < 0.1) {
-                document.body.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
-                setTimeout(() => {
-                    document.body.style.transform = 'translate(0, 0)';
-                }, 50);
-            }
-        }, 2000);
-
-        // Easter egg after 30 seconds
-        setTimeout(() => {
-            const glitchMsg = document.createElement('div');
-            glitchMsg.className = 'line error';
-            glitchMsg.innerHTML = '<br><span class="error">⚠⚠⚠ PROXIMITY ALERT ⚠⚠⚠</span><br><span class="error">Something is moving in the pipes above you</span><br><span class="error">Distance: 3.2 meters</span><br><span class="error">Distance: 2.1 meters</span><br><span class="error">Distance: 0.8 meters</span><br>';
-            output.appendChild(glitchMsg);
-            terminal.scrollTop = terminal.scrollHeight;
-        }, 30000);
-    </script>
-</body>
-
-</html>
+        /* Contenedor especial para el ASCII Art */
+        .ascii-container {
+            white-space: pre;
+            overflow-x: auto; /* Scroll horizontal si no
