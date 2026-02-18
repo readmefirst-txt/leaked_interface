@@ -9,11 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         /* --- RESET Y BASE --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: #000;
@@ -26,7 +22,6 @@
             overflow: hidden;
         }
 
-        /* --- TERMINAL CONTAINER --- */
         #terminal {
             padding: 20px;
             height: 100%;
@@ -36,144 +31,53 @@
             z-index: 1;
         }
 
-        /* --- EFECTOS VISUALES (SCANLINES) --- */
+        /* --- EFECTOS VISUALES --- */
         .scanline {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom,
-                    rgba(0, 255, 0, 0) 50%,
-                    rgba(0, 255, 0, 0.02) 50%);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 255, 0, 0) 50%, rgba(0, 255, 0, 0.02) 50%);
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 999;
-            animation: scan 8s linear infinite;
         }
-
-        @keyframes scan {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 100%; }
-        }
-
-        .glitch { animation: glitch-anim 3s infinite; }
-        @keyframes glitch-anim {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        /* --- ESTILOS DE TEXTO --- */
-        .header {
-            border: 2px solid #0f0;
-            padding: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .ascii-art {
-            white-space: pre;
-            overflow-x: auto;
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-        .ascii-art::-webkit-scrollbar { display: none; }
 
         .error { color: #f00; text-shadow: 0 0 5px #f00; }
         .warning { color: #ff0; }
-        .timestamp { color: #0a0; font-size: 0.8em; }
-        .line { margin: 5px 0; word-wrap: break-word; }
+        .line { margin: 5px 0; }
+        .ascii-art { white-space: pre; font-size: 12px; margin-bottom: 10px; }
 
-        /* --- INPUT AREA --- */
-        #input-line {
-            display: flex;
-            margin-top: 20px;
-            padding-bottom: 50px;
-        }
-
-        #prompt { color: #0f0; white-space: nowrap; margin-right: 8px; }
-
+        #input-line { display: flex; margin-top: 20px; padding-bottom: 50px; }
         #user-input {
-            background: transparent;
-            border: none;
-            color: #0f0;
-            font-family: 'VT323', monospace;
-            font-size: 18px;
-            outline: none;
-            flex: 1;
+            background: transparent; border: none; color: #0f0;
+            font-family: 'VT323', monospace; font-size: 18px; outline: none; flex: 1;
         }
 
-        /* --- ESTILOS DEL POPUP DE LOGIN --- */
+        /* --- LOGIN POPUP --- */
         #sys-login {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.98);
             z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
 
         .login-box {
-            border: 2px solid #f00;
-            padding: 20px;
-            background: #000;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 0 20px #f00;
-            text-align: center;
-            font-family: 'VT323', monospace;
-        }
-
-        .login-header {
-            color: #f00;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #f00;
-            padding-bottom: 10px;
-            animation: blink 1s infinite;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .input-group label {
-            color: #f00;
-            display: block;
-            margin-bottom: 5px;
+            border: 2px solid #f00; padding: 20px; background: #000;
+            width: 90%; max-width: 400px; box-shadow: 0 0 20px #f00; text-align: center;
         }
 
         .login-input {
-            width: 100%;
-            background: #110000;
-            border: 1px solid #f00;
-            color: #f00;
-            padding: 8px;
-            font-family: 'VT323', monospace;
-            font-size: 18px;
-            outline: none;
+            width: 100%; background: #110000; border: 1px solid #f00;
+            color: #f00; padding: 8px; margin-top: 5px; font-family: 'VT323', monospace; outline: none;
         }
 
         .hidden { display: none !important; }
 
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-
-        @media (max-width: 600px) {
-            body { font-size: 16px; }
-            .header { font-size: 0.8em; }
-            #input-line { flex-direction: column; }
-            #user-input { margin-top: 5px; width: 100%; }
+        /* --- DEATH SCREEN --- */
+        #death-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; color: #f00; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 3000; text-align: center;
         }
     </style>
 </head>
@@ -181,60 +85,46 @@
 <body>
     <div class="scanline"></div>
 
+    <div id="death-screen" class="hidden">
+        <div class="error" style="font-size: 2em; margin-bottom: 20px;">[SIGNAL_LOST]</div>
+        <div class="line">BRUTAL FORCE ATTEMPT DETECTED AT <span id="death-ip">███.██.███.█</span></div>
+        <div class="line">HARDWARE LOCK ENGAGED.</div>
+        <div class="line" style="margin-top:20px; color: #555;">{ERROR: 0x80004005} - MODULE_UNRESPONSIVE</div>
+        <div class="line" style="color: #333;">Goodbye, s██bj██t.</div>
+    </div>
+
     <div id="terminal" onclick="document.getElementById('user-input').focus()">
-        
-        <div id="main-header" class="header glitch">
+        <div class="header">
             <div class="ascii-art">
 ╔════════════════════════════════════════╗
 ║ S.S. ETERNAL MERIDIAN - TERMINAL v2.4  ║
 ║ DECK 3 - NODE: 0x2F91 [UNAUTHORIZED]   ║
-╚════════════════════════════════════════╝
-            </div>
+╚════════════════════════════════════════╝</div>
             <div class="error">⚠ UNAUTHORIZED ACCESS DETECTED ⚠</div>
         </div>
 
-        <div id="boot-sequence">
-            <div class="line timestamp">[2004-06-15 03:47:12 UTC]</div>
+        <div id="output">
             <div class="line">SYSTEM BOOT... OK</div>
-            <div class="line">LOADING SENSOR DATA...</div>
-            <div class="line"><span class="warning">WARNING: 8/12 THERMAL SENSORS OFFLINE</span></div>
-            <div class="line"><span class="warning">WARNING: ACOUSTIC ANOMALY DETECTED</span></div>
-            <div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-            <div class="line">&nbsp;</div>
-
-            <div class="line">AVAILABLE COMMANDS:</div>
-            <div class="line"> status - Check system status</div>
-            <div class="line"> sensors - View sensor readings</div>
-            <div class="line"> logs - Access maintenance logs</div>
-            <div class="line"> thermal - Thermal camera feed</div>
-            <div class="line"> audio - Audio monitoring</div>
-            <div class="line"> help - Show this menu</div>
-            <div class="line"> exit - Abort session</div>
+            <div class="line">AVAILABLE COMMANDS: status, sensors, logs, thermal, audio, exit</div>
             <div class="line">&nbsp;</div>
         </div>
 
-        <div id="output"></div>
-
         <div id="input-line">
             <span id="prompt">deck3@junction37:~$</span>
-            <input type="text" id="user-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+            <input type="text" id="user-input" autocomplete="off" spellcheck="false" autofocus>
         </div>
     </div>
 
     <div id="sys-login" class="hidden">
         <div class="login-box">
-            <div class="login-header">⚠ SYSTEM REBOOT REQUIRED ⚠</div>
-            <div class="line" style="color: #f00;">ADMIN CREDENTIALS REQUIRED TO ABORT</div>
+            <div class="error" style="font-size: 1.5em; margin-bottom: 15px;">⚠ SECURITY OVERRIDE ⚠</div>
+            <div class="line">ATTEMPTS REMAINING: <span id="attempt-count" style="font-weight:bold">3</span></div>
             <br>
-            <div class="input-group">
-                <label>USER ID:</label>
-                <input type="text" id="sys-user" class="login-input" autocomplete="off">
+            <div style="text-align: left; color: #f00;">
+                USER ID: <input type="text" id="sys-user" class="login-input" autocomplete="off">
+                PASSWORD: <input type="password" id="sys-pass" class="login-input" autocomplete="off">
             </div>
-            <div class="input-group">
-                <label>PASSWORD:</label>
-                <input type="password" id="sys-pass" class="login-input" autocomplete="off">
-            </div>
-            <div id="login-msg" class="line"></div>
+            <div id="login-msg" class="line" style="margin-top: 10px;"></div>
         </div>
     </div>
 
@@ -242,178 +132,60 @@
         const output = document.getElementById('output');
         const input = document.getElementById('user-input');
         const terminal = document.getElementById('terminal');
-        const header = document.getElementById('main-header');
-        const boot = document.getElementById('boot-sequence');
+        const loginModal = document.getElementById('sys-login');
+        const attemptDisplay = document.getElementById('attempt-count');
+        const deathScreen = document.getElementById('death-screen');
+        
+        let attempts = 3;
 
-        document.addEventListener('click', function() {
-            if(document.getElementById('sys-login').classList.contains('hidden')){
-                input.focus();
-            }
-        });
-
-        const responses = {
-            'status': `
-<span class="timestamp">[LOG UPDATE]</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-<div class="line">SYSTEM STATUS - DECK 3</div>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-<span class="error">⚠ CRITICAL ALERTS: 3</span>
-Pipe Pressure: <span class="warning">ANOMALOUS</span>
-Temp (Sec 3-F): -7°C <span class="error">(ERROR)</span>
-Motion: <span class="error">NON-CREW MOVEMENT</span>
-Current Status: <span class="error">CREW MISSING</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>`,
-            
-            'sensors': `
-<span class="timestamp">[SENSOR READ]</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-Sensor 02: 19.2°C
-Sensor 06: 12.1°C <span class="warning">⚠ COLD</span>
-Sensor 08: <span class="error">7.3°C ⚠ CRITICAL</span>
-<span class="warning">HEAT SIGNATURE DETECTED</span>
-Shape: ELONGATED (180cm)
-<span class="error">ERROR: NOT IN DATABASE</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>`,
-
-            'logs': `
-<span class="timestamp">[ACCESSING LOGS...]</span>
-[06-14 22:47] Torres: "Breathing sound..."
-[06-15 14:23] Hendricks: "Black substance."
-[06-16 01:58] Torres: <span class="error">"FINGERS IN CEILING"</span>
-[06-16 03:47] <span class="error">YOU: UNAUTHORIZED</span>
-<span class="error">WARNING: You should not be here</span>`,
-
-            'thermal': `
-<span class="timestamp">[CAM FEED 03]</span>
-<div class="ascii-art">
-<span class="error">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░█████░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░██░██░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░██░░░░░██░░░░░░░░░░░░░░░░░░</span>
-</div>
-<span class="warning">SHAPE: Humanoid?</span>
-<span class="error">ERROR: Limb count... INCORRECT</span>
-<span class="error">FEED TERMINATED</span>`,
-
-            'audio': `
-<span class="timestamp">[AUDIO FEED]</span>
-<span class="error">⚠ PLAYING LIVE FEED ⚠</span>
-00:19 <span class="warning">[BREATHING]</span>
-00:31 <span class="error">[METAL SCRAPING]</span>
-00:52 <span class="error">[WHISPER - "...torres..."]</span>
-00:54 <span class="error">█ [SUBSONIC PULSE] █</span>
-<span class="error">RECOMMENDATION: RUN</span>
-<audio id="pipe-audio" autoplay style="display:none">
-    <source src="PIPE_MONITORING_AUDIO.wav" type="audio/wav">
-</audio>`,
-            
-            'help': `
-COMMANDS:
- status, sensors, logs
- thermal, audio, help
- exit (Abort session)`
-        };
-
-        // --- MANEJO DE COMANDOS ---
         input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
-                const command = input.value.trim().toLowerCase();
-
-                // >>> TRAMPA DE SALIDA (LOGIN) <<<
-                if (command === 'exit') {
-                    header.style.display = 'none';
-                    boot.style.display = 'none';
-                    output.innerHTML = '';
-                    document.getElementById('input-line').style.display = 'none';
-                    
-                    const loginModal = document.getElementById('sys-login');
+                const cmd = input.value.trim().toLowerCase();
+                if (cmd === 'exit') {
+                    terminal.classList.add('hidden');
                     loginModal.classList.remove('hidden');
-                    
-                    setTimeout(() => document.getElementById('sys-user').focus(), 100);
-                    return;
-                }
-
-                if (command) {
-                    const cmdLine = document.createElement('div');
-                    cmdLine.innerHTML = `<span class="timestamp">[LOG]</span> deck3:~$ ${command}`;
-                    output.appendChild(cmdLine);
-
-                    const responseLine = document.createElement('div');
-                    if (responses[command]) {
-                        responseLine.innerHTML = responses[command];
-                    } else {
-                        responseLine.innerHTML = `<span class="error">Error: ${command}</span>`;
-                    }
-                    output.appendChild(responseLine);
-                    
-                    const audioEl = responseLine.querySelector('audio');
-                    if(audioEl) audioEl.play().catch(e => console.log("Audio interaction required"));
+                    document.getElementById('sys-user').focus();
+                } else if (cmd) {
+                    const line = document.createElement('div');
+                    line.innerHTML = `<span style="color:#0a0">[LOG]</span> ~$ ${cmd}<br>Executing... [FAILED_LOAD]`;
+                    output.appendChild(line);
                 }
                 input.value = '';
-                setTimeout(() => { terminal.scrollTop = terminal.scrollHeight; }, 10);
+                terminal.scrollTop = terminal.scrollHeight;
             }
         });
 
-        // --- LÓGICA DEL LOGIN (ADMIN/ADMIN) ---
-        const sysPass = document.getElementById('sys-pass');
         const sysUser = document.getElementById('sys-user');
+        const sysPass = document.getElementById('sys-pass');
 
-        sysUser.addEventListener('keydown', function(e) {
-            if(e.key === 'Enter') sysPass.focus();
-        });
-
-        sysPass.addEventListener('keydown', function(e) {
+        const handleLogin = (e) => {
             if (e.key === 'Enter') {
-                const msg = document.getElementById('login-msg');
-                msg.innerHTML = '<span class="warning" style="color:#ff0">AUTHENTICATING...</span>';
-                
-                sysUser.disabled = true;
-                sysPass.disabled = true;
-                
                 const u = sysUser.value.trim();
                 const p = sysPass.value.trim();
+                const msg = document.getElementById('login-msg');
 
-                setTimeout(() => {
-                    if (u === 'admin' && p === 'admin') {
-                        msg.innerHTML = '<span class="timestamp" style="color:#0f0">ACCESS GRANTED. RELOADING...</span>';
-                        
-                        setTimeout(() => {
-                            document.getElementById('sys-login').classList.add('hidden');
-                            header.style.display = 'block';
-                            boot.style.display = 'block';
-                            document.getElementById('input-line').style.display = 'flex';
-                            output.innerHTML = '<br><div class="line timestamp" style="color:#0f0">[SYSTEM] ROOT PRIVILEGES RESTORED.</div><div class="line">Welcome back, Administrator.</div><br>';
-                            sysUser.value = '';
-                            sysPass.value = '';
-                            sysUser.disabled = false;
-                            sysPass.disabled = false;
-                            msg.innerHTML = '';
-                            input.focus();
-                        }, 1000);
+                if (u === 'admin' && p === 'admin') {
+                    msg.innerHTML = '<span style="color:#0f0">ACCESS GRANTED.</span>';
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    attempts--;
+                    attemptDisplay.innerText = attempts;
+                    
+                    if (attempts <= 0) {
+                        loginModal.classList.add('hidden');
+                        deathScreen.classList.remove('hidden');
+                        // Efecto de sonido de error si lo tuvieras
                     } else {
-                        msg.innerHTML = '<span class="error">ACCESS DENIED. INVALID CREDENTIALS.</span>';
-                        setTimeout(() => {
-                            msg.innerHTML = '';
-                            sysUser.value = '';
-                            sysPass.value = '';
-                            sysUser.disabled = false;
-                            sysPass.disabled = false;
-                            sysUser.focus();
-                        }, 2000);
+                        msg.innerHTML = '<span class="error">INVALID CREDENTIALS</span>';
+                        sysUser.value = ''; sysPass.value = '';
+                        sysUser.focus();
                     }
-                }, 1500); 
+                }
             }
-        });
+        };
 
-        // Easter egg
-        setTimeout(() => {
-            const glitchMsg = document.createElement('div');
-            glitchMsg.className = 'line error';
-            glitchMsg.innerHTML = '<br><span class="error">⚠ PROXIMITY ALERT: 0.8 meters</span>';
-            output.appendChild(glitchMsg);
-            terminal.scrollTop = terminal.scrollHeight;
-        }, 20000);
+        sysUser.addEventListener('keydown', (e) => e.key === 'Enter' && sysPass.focus());
+        sysPass.addEventListener('keydown', handleLogin);
     </script>
 </body>
 </html>
