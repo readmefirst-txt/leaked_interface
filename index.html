@@ -75,7 +75,6 @@
             text-align: center;
         }
 
-        /* CLASE CRÍTICA PARA QUE EL ASCII NO ROMPA EL MÓVIL */
         .ascii-art {
             white-space: pre;
             overflow-x: auto;
@@ -84,7 +83,6 @@
             margin-bottom: 10px;
             font-size: 12px;
         }
-        /* Ocultar barra de scroll en el arte */
         .ascii-art::-webkit-scrollbar { display: none; }
 
         .error { color: #f00; text-shadow: 0 0 5px #f00; }
@@ -96,7 +94,7 @@
         #input-line {
             display: flex;
             margin-top: 20px;
-            padding-bottom: 50px; /* Espacio para teclado móvil */
+            padding-bottom: 50px;
         }
 
         #prompt { color: #0f0; white-space: nowrap; margin-right: 8px; }
@@ -111,7 +109,7 @@
             flex: 1;
         }
 
-        /* --- ESTILOS DEL POPUP DE LOGIN (NUEVO) --- */
+        /* --- ESTILOS DEL POPUP DE LOGIN --- */
         #sys-login {
             position: fixed;
             top: 0;
@@ -171,7 +169,6 @@
 
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
-        /* --- MEDIA QUERIES PARA MÓVIL --- */
         @media (max-width: 600px) {
             body { font-size: 16px; }
             .header { font-size: 0.8em; }
@@ -248,7 +245,6 @@
         const header = document.getElementById('main-header');
         const boot = document.getElementById('boot-sequence');
 
-        // Enfocar siempre el input
         document.addEventListener('click', function() {
             if(document.getElementById('sys-login').classList.contains('hidden')){
                 input.focus();
@@ -326,17 +322,14 @@ COMMANDS:
 
                 // >>> TRAMPA DE SALIDA <<<
                 if (command === 'exit') {
-                    // 1. Borrar pantalla
                     header.style.display = 'none';
                     boot.style.display = 'none';
                     output.innerHTML = '';
                     document.getElementById('input-line').style.display = 'none';
                     
-                    // 2. Mostrar Login
                     const loginModal = document.getElementById('sys-login');
                     loginModal.classList.remove('hidden');
                     
-                    // 3. Enfocar Login
                     setTimeout(() => document.getElementById('sys-user').focus(), 100);
                     return;
                 }
@@ -354,7 +347,6 @@ COMMANDS:
                     }
                     output.appendChild(responseLine);
                     
-                    // Fix para reproducir audio
                     const audioEl = responseLine.querySelector('audio');
                     if(audioEl) audioEl.play().catch(e => console.log("Audio requires interaction"));
                 }
@@ -363,43 +355,73 @@ COMMANDS:
             }
         });
 
-        // --- LÓGICA DEL LOGIN (BUCLE INFINITO) ---
+        // --- LÓGICA DEL LOGIN (CON ADMIN/ADMIN) ---
         const sysPass = document.getElementById('sys-pass');
         const sysUser = document.getElementById('sys-user');
 
-        // Al dar enter en el usuario, pasar al password
         sysUser.addEventListener('keydown', function(e) {
             if(e.key === 'Enter') sysPass.focus();
         });
 
-        // Al dar enter en el password, fallar siempre
         sysPass.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const msg = document.getElementById('login-msg');
                 msg.innerHTML = '<span class="warning" style="color:#ff0">AUTHENTICATING...</span>';
                 
-                // Deshabilitar inputs mientras "piensa"
+                // Bloquear inputs
                 sysUser.disabled = true;
                 sysPass.disabled = true;
+                
+                // Obtener valores
+                const u = sysUser.value.trim();
+                const p = sysPass.value.trim();
 
                 setTimeout(() => {
-                    msg.innerHTML = '<span class="error">ACCESS DENIED. INVALID CREDENTIALS.</span>';
-                    
-                    // Resetear para que sufran de nuevo
-                    setTimeout(() => {
-                        msg.innerHTML = '';
-                        sysUser.value = '';
-                        sysPass.value = '';
-                        sysUser.disabled = false;
-                        sysPass.disabled = false;
-                        sysUser.focus();
-                    }, 2000);
-                    
+                    // --- AQUÍ ESTÁ LA MAGIA DEL ADMIN ---
+                    if (u === 'admin' && p === 'admin') {
+                        // ÉXITO
+                        msg.innerHTML = '<span class="timestamp" style="color:#0f0">ACCESS GRANTED. RELOADING...</span>';
+                        
+                        setTimeout(() => {
+                            // 1. Ocultar Login
+                            document.getElementById('sys-login').classList.add('hidden');
+                            
+                            // 2. Restaurar Pantalla
+                            header.style.display = 'block';
+                            boot.style.display = 'block';
+                            document.getElementById('input-line').style.display = 'flex';
+                            
+                            // 3. Mensaje de bienvenida
+                            output.innerHTML = '<br><div class="line timestamp" style="color:#0f0">[SYSTEM] ROOT PRIVILEGES RESTORED.</div><div class="line">Welcome back, Administrator.</div><br>';
+                            
+                            // 4. Limpiar
+                            sysUser.value = '';
+                            sysPass.value = '';
+                            sysUser.disabled = false;
+                            sysPass.disabled = false;
+                            msg.innerHTML = '';
+                            
+                            // 5. Enfocar terminal
+                            input.focus();
+                        }, 1000);
+
+                    } else {
+                        // FALLO (Bucle infinito)
+                        msg.innerHTML = '<span class="error">ACCESS DENIED. INVALID CREDENTIALS.</span>';
+                        
+                        setTimeout(() => {
+                            msg.innerHTML = '';
+                            sysUser.value = '';
+                            sysPass.value = '';
+                            sysUser.disabled = false;
+                            sysPass.disabled = false;
+                            sysUser.focus();
+                        }, 2000);
+                    }
                 }, 1500); 
             }
         });
 
-        // Evento aleatorio (Susto)
         setTimeout(() => {
             const glitchMsg = document.createElement('div');
             glitchMsg.className = 'line error';
