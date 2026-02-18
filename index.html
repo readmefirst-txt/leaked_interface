@@ -1,97 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL BACKUP MODE</title>
+    <title>S.S. ETERNAL MERIDIAN - DECK 3 TERMINAL [LIVE]</title>
     <style>
-        /* RESET BÁSICO */
-        * { box-sizing: border-box; }
-        
-        body {
-            background-color: #000000; /* Fondo Negro Puro */
-            color: #00ff00; /* Verde Terminal */
-            /* Fuente segura del sistema: si no tiene una, usa la siguiente */
-            font-family: 'Courier New', Courier, monospace; 
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        * {
             margin: 0;
-            padding: 15px; /* Relleno para que el texto no toque los bordes */
-            font-size: 16px;
-            line-height: 1.5;
-            min-height: 100vh; /* Ocupa al menos toda la pantalla */
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* ELIMINAMOS POSICIONES FIJAS COMPLEJAS */
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            line-height: 1.4;
+            overflow: hidden;
+        }
+
         #terminal {
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.98;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            display: block;
-            padding-bottom: 60px; /* Espacio para el input abajo */
+            height: 100%;
+            background: linear-gradient(to bottom,
+                    rgba(0, 255, 0, 0) 50%,
+                    rgba(0, 255, 0, 0.02) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 0 100%;
+            }
+        }
+
+        .glitch {
+            animation: glitch-anim 3s infinite;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
         }
 
         .header {
-            border: 2px solid #00ff00;
+            border: 2px solid #0f0;
             padding: 10px;
             margin-bottom: 20px;
             text-align: center;
-            font-weight: bold;
         }
 
-        .ascii-art {
-            font-size: 10px; /* Letra diminuta para el arte */
-            white-space: pre; /* Respeta los espacios del dibujo */
-            overflow-x: scroll; /* Permite deslizar si es muy ancho */
-            display: block;
-            margin: 10px 0;
-            border: 1px dashed #005500; /* Borde sutil para ver dónde termina */
+        .error {
+            color: #f00;
+            animation: blink 1s infinite;
         }
 
-        .line { margin-bottom: 5px; }
-        .error { color: #ff3333; }
-        .warning { color: #ffff33; }
-        .timestamp { color: #00aa00; font-size: 0.8em; }
+        @keyframes blink {
 
-        /* INPUT FLOTANTE ABAJO (ESTILO WHATSAPP) */
-        #input-area {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #000;
-            border-top: 1px solid #00ff00;
-            padding: 10px;
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .warning {
+            color: #ff0;
+        }
+
+        .line {
+            margin: 5px 0;
+        }
+
+        #input-line {
             display: flex;
-            align-items: center;
+            margin-top: 20px;
         }
 
-        #prompt { margin-right: 5px; font-weight: bold; }
-        
+        #prompt {
+            color: #0f0;
+        }
+
         #user-input {
-            background: #111;
-            border: 1px solid #333;
-            color: #00ff00;
-            flex-grow: 1; /* Ocupa todo el espacio disponible */
-            padding: 8px;
-            font-family: monospace;
-            font-size: 16px; /* Evita zoom en iPhone */
+            background: transparent;
+            border: none;
+            color: #0f0;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            outline: none;
+            flex: 1;
+            margin-left: 5px;
         }
 
-        #user-input:focus { outline: none; border-color: #00ff00; }
-        
+        .cursor {
+            animation: cursor-blink 1s infinite;
+        }
+
+        @keyframes cursor-blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .timestamp {
+            color: #0a0;
+            font-size: 14px;
+        }
     </style>
 </head>
+
 <body>
-
+    <div class="scanline"></div>
     <div id="terminal">
-        <div class="header">
-            S.S. ETERNAL MERIDIAN<br>
-            SAFE MODE v1.0
-        </div>
-
-        <div class="line timestamp">[CONNECTION ESTABLISHED]</div>
-        <div class="line">System re-routed to backup display.</div>
-        <div class="line">Visual drivers: <span class="error">FAILED</span></div>
-        <div class="line">Text-only mode: <span class="warning">ACTIVE</span></div>
-        <div class="line">----------------------------------------</div>
-        
-        <div class="line">AVAILABLE COMMANDS:</div>
-        <div class="line">> status</div>
-        <div class="line">> sensors</div>
+        <div class="header glitch">
+            ╔═══════════════════════════════════════════════════════════╗<br>
+            ║ S.S. ETERNAL MERIDIAN - MAINTENANCE TERMINAL v2.4.1 ║<br>
+            ║ DECK 3 - JUNCTION 37 - SENSOR ARRAY [NODE: 0x2F91] ║<br>
+            ║ <span class="error
