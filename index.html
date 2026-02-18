@@ -1,256 +1,187 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark" data-lang="es">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORE_DUMP // 24.03.26</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>S.S. ETERNAL MERIDIAN - DECK 3 TERMINAL [LIVE]</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        :root {
-            --bg: #000000;
-            --grid: rgba(255, 255, 255, 0.03);
-            --box-bg: #050505;
-            --text: #d4d4d4;
-            --border: #222;
-            --accent-red: #ff3333;
-            --accent-green: #00ff41;
-            --label: #555;
-            --switch-bg: #111;
-        }
-
-        [data-theme="light"] {
-            --bg: #f2f2f2;
-            --grid: rgba(0, 0, 0, 0.05);
-            --box-bg: #ffffff;
-            --text: #1a1a1a;
-            --border: #ccc;
-            --accent-red: #b00020;
-            --accent-green: #1b5e20;
-            --label: #888;
-            --switch-bg: #ddd;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Share Tech Mono', monospace;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-image: radial-gradient(var(--grid) 1px, transparent 1px);
-            background-size: 30px 30px;
-            transition: background 0.2s ease;
-            padding: 20px;
+            background: #000; color: #0f0;
+            font-family: 'VT323', monospace; font-size: 18px;
+            line-height: 1.4; height: 100vh; width: 100vw;
+            overflow: hidden;
         }
 
-        .top-controls {
-            width: 100%;
-            max-width: 650px;
-            margin-top: 20px;
+        #terminal {
+            padding: 20px; height: 100%; width: 100%;
+            overflow-y: auto; position: relative; z-index: 1;
         }
 
-        #lang-selector, #protocol-selector {
-            display: flex;
-            background: var(--switch-bg);
-            border: 1px solid var(--border);
-            padding: 2px;
-            gap: 2px;
-            margin-bottom: 10px;
+        .scanline {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 255, 0, 0) 50%, rgba(0, 255, 0, 0.02) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 999;
         }
 
-        .mode-btn, .lang-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--label);
-            padding: 10px;
-            font-family: inherit;
-            font-size: 10px;
-            cursor: crosshair;
-            text-transform: uppercase;
+        .header { border: 2px solid #0f0; padding: 10px; margin-bottom: 20px; text-align: center; }
+        .ascii-art { white-space: pre; font-size: 12px; margin-bottom: 10px; }
+        .error { color: #f00; text-shadow: 0 0 5px #f00; }
+        .warning { color: #ff0; }
+        .timestamp { color: #0a0; font-size: 0.8em; }
+        .line { margin: 5px 0; }
+
+        #input-line { display: flex; margin-top: 20px; padding-bottom: 50px; }
+        #prompt { color: #0f0; margin-right: 8px; }
+        #user-input {
+            background: transparent; border: none; color: #0f0;
+            font-family: 'VT323', monospace; font-size: 18px;
+            outline: none; flex: 1;
         }
 
-        .active {
-            background: var(--box-bg);
-            color: var(--text);
-            font-weight: bold;
+        /* --- ESTILOS LOGIN --- */
+        #sys-login {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.98); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        #container { width: 100%; max-width: 650px; }
-
-        .box {
-            background: var(--box-bg);
-            border: 1px solid var(--border);
-            margin-bottom: 30px;
+        .login-box {
+            border: 2px solid #f00; padding: 30px; background: #000;
+            width: 90%; max-width: 400px; box-shadow: 0 0 30px #f00;
+            text-align: center;
         }
 
-        .label {
-            font-size: 10px;
-            color: var(--label);
-            padding: 10px 15px;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
-            letter-spacing: 2px;
+        .login-header { color: #f00; font-size: 1.5em; margin-bottom: 20px; text-decoration: underline; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { color: #f00; display: block; margin-bottom: 5px; }
+        .login-input {
+            width: 100%; background: #110000; border: 1px solid #f00;
+            color: #f00; padding: 8px; font-family: 'VT323', monospace;
+            font-size: 18px; outline: none;
         }
 
-        .content { padding: 30px; }
-
-        /* --- NUEVO ENCABEZADO: TIEMPO DOMINANTE --- */
-        #t-minus {
-            font-size: 3.5em;
-            color: var(--text);
-            display: block;
-            font-weight: bold;
-            letter-spacing: -2px;
-            margin-bottom: 10px;
-        }
-
-        .saturacion-line {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-top: 1px solid var(--border);
-            padding-top: 15px;
-            margin-top: 5px;
-        }
-
-        #saturacion { font-size: 1.4em; color: var(--accent-red); font-weight: bold; }
-
-        .payload {
-            color: var(--accent-green);
-            font-style: italic;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        input {
-            width: 100%;
-            background: rgba(0,0,0,0.03);
-            border: 1px solid var(--border);
-            color: var(--accent-green);
-            padding: 15px;
-            font-family: inherit;
-            outline: none;
-        }
-        [data-theme="dark"] input { background: #000; }
-
-        /* RTL SUPPORT */
-        [data-rtl="true"] .content { text-align: right; direction: rtl; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body data-theme="dark" data-lang="es" data-rtl="false">
 
-    <div class="top-controls">
-        <div id="lang-selector">
-            <button class="lang-btn active" onclick="setLang('es')">Español</button>
-            <button class="lang-btn" onclick="setLang('en')">English</button>
-            <button class="lang-btn" onclick="setLang('ru')">Русский</button>
-            <button class="lang-btn" onclick="setLang('ar')">العربية</button>
-            <button class="lang-btn" onclick="setLang('zh')">中文</button>
-            <button class="lang-btn" onclick="setLang('he')">עברית</button>
-            <button class="lang-btn" onclick="setLang('ko')">조선말</button>
+<body>
+    <div class="scanline"></div>
+
+    <div id="terminal" onclick="document.getElementById('user-input').focus()">
+        <div id="main-header" class="header">
+            <div class="ascii-art">
+╔════════════════════════════════════════╗
+║ S.S. ETERNAL MERIDIAN - TERMINAL v2.4  ║
+║ DECK 3 - NODE: 0x2F91 [UNAUTHORIZED]   ║
+╚════════════════════════════════════════╝
+            </div>
+            <div class="error">⚠ UNAUTHORIZED ACCESS DETECTED ⚠</div>
         </div>
 
-        <div id="protocol-selector">
-            <button class="mode-btn" id="light-btn" onclick="setTheme('light')">Light_Protocol [OFF]</button>
-            <button class="mode-btn active" id="dark-btn" onclick="setTheme('dark')">Dark_Protocol [LIVE]</button>
+        <div id="boot-sequence">
+            <div class="line timestamp">[2004-06-15 03:47:12 UTC]</div>
+            <div class="line">SYSTEM BOOT... OK</div>
+            <div class="line">LOADING SENSOR DATA...</div>
+            <div class="line"><span class="warning">WARNING: 8/12 THERMAL SENSORS OFFLINE</span></div>
+            <div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div class="line">COMMANDS: status, sensors, logs, exit</div>
+        </div>
+
+        <div id="output"></div>
+
+        <div id="input-line">
+            <span id="prompt">deck3@junction37:~$</span>
+            <input type="text" id="user-input" autocomplete="off" autofocus>
         </div>
     </div>
 
-    <div id="container">
-        <div class="box">
-            <div class="label" id="lbl-monitor">Reloj de Extinción Global</div>
-            <div class="content">
-                <div style="color: var(--accent-red); font-size: 10px; margin-bottom: 10px;" id="lbl-tminus">> T-MINUS_PARA_SILENCIO_TOTAL:</div>
-                <span id="t-minus">000:00:00:00</span>
-                <div class="saturacion-line">
-                    <span style="font-size: 10px; color: var(--label);" id="lbl-sat-text">SATURACIÓN_SINTÉTICA:</span>
-                    <span id="saturacion">00.00000000%</span>
-                </div>
+    <div id="sys-login" class="hidden">
+        <div class="login-box" id="login-container">
+            <div class="login-header">⚠ SECURITY LOCKOUT ⚠</div>
+            <div class="line" style="color: #f00;">ROOT PERMISSIONS REQUIRED TO PROCEED</div>
+            <div id="attempt-counter" class="line" style="margin: 10px 0; font-weight: bold;">ATTEMPTS REMAINING: 3</div>
+            <br>
+            <div class="input-group">
+                <label>USER ID:</label>
+                <input type="text" id="sys-user" class="login-input" autocomplete="off">
             </div>
-        </div>
-
-        <div class="box">
-            <div class="label" id="lbl-log">Archivo de Consola</div>
-            <div class="content" id="log-body" style="font-size: 15px; line-height: 1.7;">
-                // INICIO_PROTOCOLO<br>
-                El patrón se borra. La señal humana se disuelve en ruido.<br>
-                // MODO: SUPERVIVENCIA<br><br>
-                Inyecte verdad. Conserve el patrón original.
+            <div class="input-group">
+                <label>PASSWORD:</label>
+                <input type="password" id="sys-pass" class="login-input" autocomplete="off">
             </div>
-        </div>
-
-        <div class="box" style="border-left: 4px solid var(--accent-green);">
-            <div class="label" style="color: var(--accent-green);" id="lbl-task">MISIÓN: RECONSTRUCCIÓN_PATRÓN_01</div>
-            <div class="content">
-                <div class="payload">
-                    "Lo que la urgencia nos dicta no es el grito,<br>
-                    sino el callado esfuerzo de ser uno mismo<br>
-                    en medio de lo que se deshace."<br>
-                    — Alberto Girri
-                </div>
-                <input type="text" id="input-ev" placeholder="PEGAR_URL_DE_EVIDENCIA" autocomplete="off">
-            </div>
+            <div id="login-msg" class="line"></div>
         </div>
     </div>
 
     <script>
-        const translations = {
-            es: { monitor: "Reloj de Extinción Global", tminus: "> T-MINUS_PARA_SILENCIO_TOTAL:", sat_text: "SATURACIÓN_SINTÉTICA:", log: "Archivo de Consola", log_body: "// INICIO_PROTOCOLO<br>El patrón se borra. La señal humana se disuelve en ruido.<br>// MODO: SUPERVIVENCIA<br><br>Inyecte verdad. Conserve el patrón original.", task: "MISIÓN: RECONSTRUCCIÓN_PATRÓN_01", placeholder: "PEGAR_URL_DE_EVIDENCIA", rtl: false },
-            en: { monitor: "Global Extinction Clock", tminus: "> T-MINUS_TO_TOTAL_SILENCE:", sat_text: "SYNTHETIC_SATURATION:", log: "Console Archive", log_body: "// PROTOCOL_START<br>The pattern fades. Human signal dissolves into noise.<br>// MODE: SURVIVAL<br><br>Inject truth. Preserve the original pattern.", task: "MISSION: PATTERN_RECONSTRUCTION_01", placeholder: "PASTE_EVIDENCE_URL", rtl: false },
-            ru: { monitor: "Часы Глобального Исчезновения", tminus: "> ОТСЧЕТ_ДО_ПОЛНОЙ_ТИШИНЫ:", sat_text: "СИНТЕТИЧЕСКАЯ_НАСЫЩЕННОСТЬ:", log: "Консольный Архив", log_body: "// ЗАПУСК_ПРОТОКОЛА<br>Узор стирается. Человеческий сигнал растворяется в шуме.<br>// РЕЖИМ: ВЫЖИВАНИЕ<br><br>Вводите правду. Сохраните оригинал.", task: "МИССИЯ: РЕКОНСТРУКЦИЯ_УЗОРА_01", placeholder: "ВСТАВИТЬ_URL_ДОКАЗАТЕЛЬСТВА", rtl: false },
-            zh: { monitor: "全球灭绝时钟", tminus: "> 距完全沉默的倒计时:", sat_text: "合成饱和度:", log: "控制台存档", log_body: "// 协议启动<br>模式正在消失。人类信号溶解在噪音中。<br>// 模式：生存<br><br>注入真相。保留原始模式。", task: "任务：模式重建_01", placeholder: "粘贴证据链接", rtl: false },
-            ar: { monitor: "ساعة الانقراض العالمي", tminus: "> العد_التنازلي_للصمت_التام:", sat_text: "التشبع_الاصطناعي:", log: "أرشيف وحدة التحكم", log_body: "// بدء_البروتوكول<br>النمط يتلاشى. الإشارة البشرية تذوب في الضوضاء.<br>// وضع: البقاء<br><br>احقن الحقيقة. حافظ على النمط الأصلي.", task: "المهمة: إعادة_بناء_النمط_01", placeholder: "لصق_رابط_الدليل", rtl: true },
-            he: { monitor: "שעון הכחדה גלובלי", tminus: "> ספירה לאחור לשתיקה מוחלטת:", sat_text: "רוויה סינתטית:", log: "ארכיון קונסולה", log_body: "// תחילת פרוטוקول<br>הדפוס נמחק. האות האנושי מתמוסס ברעש.<br>// מצב: הישרדות<br><br>הזרק אמת. שמור על הדפוס המקורי.", task: "משימה: שחזור דפוס 01", placeholder: "הדבק קישור לראיות", rtl: true },
-            ko: { monitor: "전지구적 멸종 시계", tminus: "> 완전한 침묵까지의 카운트다운:", sat_text: "합성 포화도:", log: "콘솔 아카이브", log_body: "// 프로토콜 시작<br>패턴이 지워집니다. 인간의 신호가 소음 속으로 녹아듭니다.<br>// 모드: 생존<br><br>진실을 주입하십시오. 원본 패턴을 보존하십시오.", task: "임무: 패턴 재구축 01", placeholder: "증거 URL 붙여넣기", rtl: false }
+        const output = document.getElementById('output');
+        const input = document.getElementById('user-input');
+        const terminal = document.getElementById('terminal');
+        const loginModal = document.getElementById('sys-login');
+        
+        let loginAttempts = 0;
+        const MAX_ATTEMPTS = 3;
+
+        // Comandos básicos
+        const responses = {
+            'status': '<div class="line warning">SYSTEM: UNSTABLE</div><div class="line">DECK 3 PRESSURE: CRITICAL</div>',
+            'sensors': '<div class="line error">ERROR: SENSORS BLINDED BY BLACK SUBSTANCE</div>',
+            'logs': '<div class="line">[06-16 01:58] Torres: "FINGERS IN CEILING"</div>'
         };
 
-        function setLang(lang) {
-            document.body.setAttribute('data-lang', lang);
-            const t = translations[lang];
-            document.body.setAttribute('data-rtl', t.rtl);
-            document.getElementById('lbl-monitor').innerText = t.monitor;
-            document.getElementById('lbl-tminus').innerText = t.tminus;
-            document.getElementById('lbl-sat-text').innerText = t.sat_text;
-            document.getElementById('lbl-log').innerText = t.log;
-            document.getElementById('log-body').innerHTML = t.log_body;
-            document.getElementById('lbl-task').innerText = t.task;
-            document.getElementById('input-ev').placeholder = t.placeholder;
-            
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${lang}'`));
-            });
-        }
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                const cmd = input.value.trim().toLowerCase();
+                if (cmd === 'exit') {
+                    document.getElementById('input-line').style.display = 'none';
+                    loginModal.classList.remove('hidden');
+                    document.getElementById('sys-user').focus();
+                    return;
+                }
+                
+                output.innerHTML += `<div><span class="timestamp">[LOG]</span> deck3:~$ ${cmd}</div>`;
+                output.innerHTML += `<div>${responses[cmd] || '<span class="error">Unknown command</span>'}</div>`;
+                input.value = '';
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        });
 
-        function setTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            document.getElementById('light-btn').classList.toggle('active', theme === 'light');
-            document.getElementById('dark-btn').classList.toggle('active', theme === 'dark');
-            document.getElementById('light-btn').innerText = `Light_Protocol [${theme === 'light' ? 'LIVE' : 'OFF'}]`;
-            document.getElementById('dark-btn').innerText = `Dark_Protocol [${theme === 'dark' ? 'LIVE' : 'OFF'}]`;
-        }
+        // Lógica de Login (admin/admin)
+        const sysUser = document.getElementById('sys-user');
+        const sysPass = document.getElementById('sys-pass');
+        const msg = document.getElementById('login-msg');
+        const attemptCounter = document.getElementById('attempt-counter');
 
-        const FECHA_COLAPSO = new Date("March 24, 2026 00:00:00").getTime();
-        const FECHA_INICIO = new Date("January 1, 2024 00:00:00").getTime();
-
-        function sync() {
-            const ahora = new Date().getTime();
-            const progreso = (ahora - FECHA_INICIO) / (FECHA_COLAPSO - FECHA_INICIO);
-            let sat = 57.512 + (progreso * 41.488); // Progresión al 99%
-            document.getElementById('saturacion').innerText = (sat + Math.random()*0.000009).toFixed(8) + "%";
-            
-            const diff = FECHA_COLAPSO - ahora;
-            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const s = Math.floor((diff % (1000 * 60)) / 1000);
-            document.getElementById('t-minus').innerText = `${d}d:${h.toString().padStart(2,'0')}h:${m.toString().padStart(2,'0')}m:${s.toString().padStart(2,'0')}s`;
-        }
-        setInterval(sync, 100);
+        sysPass.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (sysUser.value === 'admin' && sysPass.value === 'admin') {
+                    msg.innerHTML = '<span style="color:#0f0">ACCESS GRANTED. SYSTEM RESTORED.</span>';
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    loginAttempts++;
+                    const remaining = MAX_ATTEMPTS - loginAttempts;
+                    attemptCounter.innerText = `ATTEMPTS REMAINING: ${remaining}`;
+                    
+                    if (loginAttempts >= MAX_ATTEMPTS) {
+                        document.getElementById('login-container').innerHTML = `
+                            <div class="login-header">✖ TERMINAL TERMINATED ✖</div>
+                            <div class="error">MAXIMUM ATTEMPTS EXCEEDED.</div>
+                            <div class="line">SECURITY PROTOCOL 9 ACTIVATED.</div>
+                            <div class="line warning">GOODBYE.</div>
+                        `;
+                        setTimeout(() => { document.body.innerHTML = ''; }, 4000);
+                    } else {
+                        msg.innerHTML = '<span class="error">ACCESS DENIED.</span>';
+                        sysUser.value = ''; sysPass.value = ''; sysUser.focus();
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
