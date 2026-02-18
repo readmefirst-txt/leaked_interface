@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>S.S. ETERNAL MERIDIAN - DECK 3 TERMINAL [LIVE]</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+        /* --- RESET Y BASE --- */
         * {
             margin: 0;
             padding: 0;
@@ -20,30 +21,22 @@
             font-family: 'VT323', monospace;
             font-size: 18px;
             line-height: 1.4;
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
         }
 
+        /* --- TERMINAL CONTAINER --- */
         #terminal {
             padding: 20px;
-            height: 100vh;
+            height: 100%;
+            width: 100%;
             overflow-y: auto;
-            animation: flicker 0.15s infinite;
+            position: relative;
+            z-index: 1;
         }
 
-        @keyframes flicker {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.98;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
+        /* --- EFECTOS VISUALES (SCANLINES) --- */
         .scanline {
             position: fixed;
             top: 0;
@@ -55,49 +48,26 @@
                     rgba(0, 255, 0, 0.02) 50%);
             background-size: 100% 4px;
             pointer-events: none;
+            z-index: 999;
             animation: scan 8s linear infinite;
         }
 
         @keyframes scan {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 0 100%;
-            }
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
         }
 
-        .glitch {
-            animation: glitch-anim 3s infinite;
-        }
-
+        .glitch { animation: glitch-anim 3s infinite; }
         @keyframes glitch-anim {
-            0% {
-                transform: translate(0);
-            }
-
-            20% {
-                transform: translate(-2px, 2px);
-            }
-
-            40% {
-                transform: translate(-2px, -2px);
-            }
-
-            60% {
-                transform: translate(2px, 2px);
-            }
-
-            80% {
-                transform: translate(2px, -2px);
-            }
-
-            100% {
-                transform: translate(0);
-            }
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
         }
 
+        /* --- ESTILOS DE TEXTO --- */
         .header {
             border: 2px solid #0f0;
             padding: 10px;
@@ -105,40 +75,31 @@
             text-align: center;
         }
 
-        .error {
-            color: #f00;
-            animation: blink 1s infinite;
+        /* CLASE CRÍTICA PARA QUE EL ASCII NO ROMPA EL MÓVIL */
+        .ascii-art {
+            white-space: pre;
+            overflow-x: auto;
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 12px;
         }
+        /* Ocultar barra de scroll en el arte */
+        .ascii-art::-webkit-scrollbar { display: none; }
 
-        @keyframes blink {
+        .error { color: #f00; text-shadow: 0 0 5px #f00; }
+        .warning { color: #ff0; }
+        .timestamp { color: #0a0; font-size: 0.8em; }
+        .line { margin: 5px 0; word-wrap: break-word; }
 
-            0%,
-            50% {
-                opacity: 1;
-            }
-
-            51%,
-            100% {
-                opacity: 0;
-            }
-        }
-
-        .warning {
-            color: #ff0;
-        }
-
-        .line {
-            margin: 5px 0;
-        }
-
+        /* --- INPUT AREA --- */
         #input-line {
             display: flex;
             margin-top: 20px;
+            padding-bottom: 50px; /* Espacio para teclado móvil */
         }
 
-        #prompt {
-            color: #0f0;
-        }
+        #prompt { color: #0f0; white-space: nowrap; margin-right: 8px; }
 
         #user-input {
             background: transparent;
@@ -148,300 +109,304 @@
             font-size: 18px;
             outline: none;
             flex: 1;
-            margin-left: 5px;
         }
 
-        .cursor {
-            animation: cursor-blink 1s infinite;
+        /* --- ESTILOS DEL POPUP DE LOGIN (NUEVO) --- */
+        #sys-login {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        @keyframes cursor-blink {
-
-            0%,
-            50% {
-                opacity: 1;
-            }
-
-            51%,
-            100% {
-                opacity: 0;
-            }
+        .login-box {
+            border: 2px solid #f00;
+            padding: 20px;
+            background: #000;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 20px #f00;
+            text-align: center;
+            font-family: 'VT323', monospace;
         }
 
-        .hidden {
-            display: none;
+        .login-header {
+            color: #f00;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f00;
+            padding-bottom: 10px;
+            animation: blink 1s infinite;
         }
 
-        .timestamp {
-            color: #0a0;
-            font-size: 14px;
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            color: #f00;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .login-input {
+            width: 100%;
+            background: #110000;
+            border: 1px solid #f00;
+            color: #f00;
+            padding: 8px;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            outline: none;
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+        /* --- MEDIA QUERIES PARA MÓVIL --- */
+        @media (max-width: 600px) {
+            body { font-size: 16px; }
+            .header { font-size: 0.8em; }
+            #input-line { flex-direction: column; }
+            #user-input { margin-top: 5px; width: 100%; }
         }
     </style>
 </head>
 
 <body>
     <div class="scanline"></div>
-    <div id="terminal">
-        <div class="header glitch">
-            ╔═══════════════════════════════════════════════════════════╗<br>
-            ║ S.S. ETERNAL MERIDIAN - MAINTENANCE TERMINAL v2.4.1 ║<br>
-            ║ DECK 3 - JUNCTION 37 - SENSOR ARRAY [NODE: 0x2F91] ║<br>
-            ║ <span class="error">⚠ UNAUTHORIZED ACCESS DETECTED ⚠</span> ║<br>
-            ╚═══════════════════════════════════════════════════════════╝
+
+    <div id="terminal" onclick="document.getElementById('user-input').focus()">
+        
+        <div id="main-header" class="header glitch">
+            <div class="ascii-art">
+╔════════════════════════════════════════╗
+║ S.S. ETERNAL MERIDIAN - TERMINAL v2.4  ║
+║ DECK 3 - NODE: 0x2F91 [UNAUTHORIZED]   ║
+╚════════════════════════════════════════╝
+            </div>
+            <div class="error">⚠ UNAUTHORIZED ACCESS DETECTED ⚠</div>
         </div>
 
-        <div class="line timestamp">[2004-06-15 03:47:12 UTC]</div>
-        <div class="line">SYSTEM BOOT... OK</div>
-        <div class="line">LOADING SENSOR DATA...</div>
-        <div class="line"><span class="warning">WARNING: 8/12 THERMAL SENSORS OFFLINE</span></div>
-        <div class="line"><span class="warning">WARNING: ACOUSTIC ANOMALY DETECTED</span></div>
-        <div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-        <div class="line">&nbsp;</div>
+        <div id="boot-sequence">
+            <div class="line timestamp">[2004-06-15 03:47:12 UTC]</div>
+            <div class="line">SYSTEM BOOT... OK</div>
+            <div class="line">LOADING SENSOR DATA...</div>
+            <div class="line"><span class="warning">WARNING: 8/12 THERMAL SENSORS OFFLINE</span></div>
+            <div class="line"><span class="warning">WARNING: ACOUSTIC ANOMALY DETECTED</span></div>
+            <div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div class="line">&nbsp;</div>
 
-        <div class="line">AVAILABLE COMMANDS:</div>
-        <div class="line"> status - Check system status</div>
-        <div class="line"> sensors - View sensor readings</div>
-        <div class="line"> logs - Access maintenance logs</div>
-        <div class="line"> thermal - Thermal camera feed</div>
-        <div class="line"> audio - Audio monitoring</div>
-        <div class="line"> help - Show this menu</div>
-        <div class="line"> exit - Close terminal</div>
-        <div class="line">&nbsp;</div>
+            <div class="line">AVAILABLE COMMANDS:</div>
+            <div class="line"> status - Check system status</div>
+            <div class="line"> sensors - View sensor readings</div>
+            <div class="line"> logs - Access maintenance logs</div>
+            <div class="line"> thermal - Thermal camera feed</div>
+            <div class="line"> audio - Audio monitoring</div>
+            <div class="line"> help - Show this menu</div>
+            <div class="line"> exit - Abort session</div>
+            <div class="line">&nbsp;</div>
+        </div>
 
         <div id="output"></div>
 
         <div id="input-line">
             <span id="prompt">deck3@junction37:~$</span>
-            <input type="text" id="user-input" autofocus>
-            <span class="cursor">█</span>
+            <input type="text" id="user-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+        </div>
+    </div>
+
+    <div id="sys-login" class="hidden">
+        <div class="login-box">
+            <div class="login-header">⚠ SYSTEM REBOOT REQUIRED ⚠</div>
+            <div class="line" style="color: #f00;">ADMIN CREDENTIALS REQUIRED TO ABORT</div>
+            <br>
+            <div class="input-group">
+                <label>USER ID:</label>
+                <input type="text" id="sys-user" class="login-input" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label>PASSWORD:</label>
+                <input type="password" id="sys-pass" class="login-input" autocomplete="off">
+            </div>
+            <div id="login-msg" class="line"></div>
         </div>
     </div>
 
     <script>
         const output = document.getElementById('output');
         const input = document.getElementById('user-input');
+        const terminal = document.getElementById('terminal');
+        const header = document.getElementById('main-header');
+        const boot = document.getElementById('boot-sequence');
+
+        // Enfocar siempre el input
+        document.addEventListener('click', function() {
+            if(document.getElementById('sys-login').classList.contains('hidden')){
+                input.focus();
+            }
+        });
 
         const responses = {
             'status': `
-<span class="timestamp">[2004-06-15 03:47:19 UTC]</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SYSTEM STATUS - DECK 3 FORWARD SECTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+<span class="timestamp">[LOG UPDATE]</span>
+<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+<div class="line">SYSTEM STATUS - DECK 3</div>
+<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
 <span class="error">⚠ CRITICAL ALERTS: 3</span>
-<span class="warning">⚠ WARNINGS: 12</span>
-✓ NOMINAL: 2
-
-Pipe Pressure (Junction 37):    <span class="warning">ANOMALOUS</span>
-Temperature (Section 3-F):        -7°C <span class="error">(UNEXPLAINED DELTA)</span>
-Acoustic Monitoring:              <span class="error">ORGANIC RESONANCE DETECTED</span>
-Motion Sensors (Crawlspace):     <span class="error">MOVEMENT - NON-CREW</span>
-Substance Analysis (Pipe 37-C):  <span class="error">UNKNOWN COMPOUND</span>
-
-Last Maintenance: Torres, M. (06-14 22:47)
+Pipe Pressure: <span class="warning">ANOMALOUS</span>
+Temp (Sec 3-F): -7°C <span class="error">(ERROR)</span>
+Motion: <span class="error">NON-CREW MOVEMENT</span>
 Current Status: <span class="error">CREW MISSING</span>
-
-Type 'sensors' for detailed readings
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
+<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>`,
+            
             'sensors': `
-<span class="timestamp">[2004-06-15 03:47:24 UTC]</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-THERMAL ARRAY - DECK 3 JUNCTION 37
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Sensor 01: OFFLINE
+<span class="timestamp">[SENSOR READ]</span>
+<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
 Sensor 02: 19.2°C
-Sensor 03: 18.8°C
-Sensor 04: <span class="error">OFFLINE</span>
-Sensor 05: <span class="error">OFFLINE</span>
-Sensor 06: 12.1°C  <span class="warning">⚠ COLD SPOT</span>
-Sensor 07: <span class="error">OFFLINE</span>
-Sensor 08: <span class="error">7.3°C   ⚠⚠⚠ CRITICAL ANOMALY</span>
-Sensor 09: <span class="error">OFFLINE</span>
-Sensor 10: 18.1°C
-Sensor 11: <span class="error">OFFLINE</span>
-Sensor 12: <span class="error">OFFLINE</span>
+Sensor 06: 12.1°C <span class="warning">⚠ COLD</span>
+Sensor 08: <span class="error">7.3°C ⚠ CRITICAL</span>
+<span class="warning">HEAT SIGNATURE DETECTED</span>
+Shape: ELONGATED (180cm)
+<span class="error">ERROR: NOT IN DATABASE</span>
+<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>`,
 
-<span class="warning">HEAT SIGNATURE DETECTED IN PIPE SYSTEM</span>
-Shape: ELONGATED (approx. 180cm)
-Movement: YES
-Classification: <span class="error">UNKNOWN - NOT IN DATABASE</span>
-
-Type 'thermal' to access camera feed
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
             'logs': `
-<span class="timestamp">[2004-06-15 03:47:31 UTC]</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ACCESSING MAINTENANCE LOGS...
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="timestamp">[ACCESSING LOGS...]</span>
+[06-14 22:47] Torres: "Breathing sound..."
+[06-15 14:23] Hendricks: "Black substance."
+[06-16 01:58] Torres: <span class="error">"FINGERS IN CEILING"</span>
+[06-16 03:47] <span class="error">YOU: UNAUTHORIZED</span>
+<span class="error">WARNING: You should not be here</span>`,
 
-[06-14 22:47] Torres: "Breathing sound in Junction 37"
-[06-15 03:12] Torres: "Temperature drop. Passenger complaints."
-[06-15 14:23] Hendricks: "Black substance. Organic. Numbing effect."
-[06-15 18:09] System: Crawlspace sealed
-[06-16 01:58] Torres: <span class="error">"SAW FINGERS IN CEILING"</span>
-[06-16 02:14] System: Emergency inspection requested
-[06-16 02:47] System: Torres check-in... <span class="error">MISSED</span>
-[06-16 03:12] System: Torres location... <span class="error">UNKNOWN</span>
-[06-16 03:47] <span class="error">YOU: UNAUTHORIZED ACCESS</span>
-
-<span class="warning">WARNING: Last crew member in this section went missing</span>
-<span class="warning">WARNING: This terminal is no longer manned</span>
-<span class="error">WARNING: You should not be here</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
             'thermal': `
-<span class="timestamp">[2004-06-15 03:47:38 UTC]</span>
-INITIATING THERMAL CAMERA FEED...
-
-<span class="error">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░██░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░██░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░██░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-
-<span class="warning">SHAPE ANALYSIS: Humanoid (estimated height: 2.1m)</span>
-<span class="warning">MOVEMENT: Slow drift towards camera</span>
-<span class="error">ERROR: Shape does not match crew database</span>
+<span class="timestamp">[CAM FEED 03]</span>
+<div class="ascii-art">
+<span class="error">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
+<span class="error">░░░░░░░█████░░░░░░░░░░░░░░░░░░░░</span>
+<span class="error">░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░</span>
+<span class="error">░░░░░░░██░██░░░░░░░░░░░░░░░░░░░░</span>
+<span class="error">░░░░░██░░░░░██░░░░░░░░░░░░░░░░░░</span>
+</div>
+<span class="warning">SHAPE: Humanoid?</span>
 <span class="error">ERROR: Limb count... INCORRECT</span>
+<span class="error">FEED TERMINATED</span>`,
 
-<span class="error">FEED TERMINATED - CAMERA OFFLINE</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`,
             'audio': `
-<span class="timestamp">[2004-06-15 03:47:45 UTC]</span>
-ACCESSING ACOUSTIC MONITORING SYSTEM...
-
-Microphone Array Status: ACTIVE
-Location: Pipe Junction 37 + Crawlspace
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AUDIO PATTERN ANALYSIS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+<span class="timestamp">[AUDIO FEED]</span>
 <span class="error">⚠ PLAYING LIVE FEED ⚠</span>
-<span class="warning">[Volume adjusted for human hearing range]</span>
-
-[RECORDING - LAST 60 SECONDS]
-
-00:00  <span class="warning">████████ [STATIC NOISE - 72dB] ████████</span>
-00:08  <span class="warning">drip... drip... drip...</span>
-00:12  <span class="error">████ [INTERFERENCE] ████</span>
-00:19  <span class="warning">[BREATHING - SLOW, RHYTHMIC]</span>
-00:27  <span class="error">████ [SIGNAL DEGRADATION] ████</span>
-00:31  <span class="error">[SCRAPING - METAL ON METAL]</span>
-00:38  <span class="error">████████ [STATIC BURST] ████████</span>
-00:44  <span class="error">[WHISPER - UNINTELLIGIBLE]</span>
-00:49  <span class="error">████ [CORRUPTED DATA] ████</span>
-00:52  <span class="error">[WHISPER - "...torres..."]</span>
-00:54  <span class="error">█ [SUBSONIC PULSE - 14Hz] █</span>
-00:56  <span class="error">[WHISPER - "...don't..."] ███ [CLIPPING] ███</span>
-00:58  <span class="error">[MOVEMENT IN PIPE]</span>
-01:00  <span class="error">████████████ [FEED TERMINATED] ████████████</span>
-
-<span class="warning">PATTERN RECOGNITION: Non-mechanical origin</span>
-<span class="error">VOICE ANALYSIS: Does not match any crew member</span>
-<span class="error">FREQUENCY ANOMALY: Subsonic component detected (14 Hz)</span>
-<span class="error">SPEECH FRAGMENT DETECTED: "don't [CORRUPTED]"</span>
-
-<span class="error">⚠ PSYCHOLOGICAL WARNING ⚠</span>
-Exposure to subsonic frequencies may cause:
-- Anxiety
-- Paranoia  
-- Visual hallucinations
-- Feeling of "presence"
-- Auditory hallucinations
-
-<span class="error">RECOMMENDATION: EVACUATE SECTION IMMEDIATELY</span>
-<span class="error">AUDIO FEED DISABLED - SYSTEM LOCKOUT</span>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+00:19 <span class="warning">[BREATHING]</span>
+00:31 <span class="error">[METAL SCRAPING]</span>
+00:52 <span class="error">[WHISPER - "...torres..."]</span>
+00:54 <span class="error">█ [SUBSONIC PULSE] █</span>
+<span class="error">RECOMMENDATION: RUN</span>
 <audio id="pipe-audio" autoplay style="display:none">
     <source src="PIPE_MONITORING_AUDIO.wav" type="audio/wav">
-</audio>
-`,
+</audio>`,
+            
             'help': `
-AVAILABLE COMMANDS:
-  status    - Check system status
-  sensors   - View sensor readings
-  logs      - Access maintenance logs
-  thermal   - Thermal camera feed
-  audio     - Audio monitoring
-  help      - Show this menu
-  exit      - Close terminal
-`,
-            'exit': `
-<span class="error">ERROR: Exit command disabled</span>
-<span class="error">ERROR: Terminal lock engaged</span>
-<span class="error">ERROR: You cannot leave</span>
-
-<span class="warning">The pipes remember</span>
-<span class="warning">The pipes are listening</span>
-<span class="warning">The pipes know you're here</span>
-`
+COMMANDS:
+ status, sensors, logs
+ thermal, audio, help
+ exit (Abort session)`
         };
 
-        let commandHistory = [];
-
+        // --- MANEJO DE COMANDOS ---
         input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 const command = input.value.trim().toLowerCase();
 
+                // >>> TRAMPA DE SALIDA <<<
+                if (command === 'exit') {
+                    // 1. Borrar pantalla
+                    header.style.display = 'none';
+                    boot.style.display = 'none';
+                    output.innerHTML = '';
+                    document.getElementById('input-line').style.display = 'none';
+                    
+                    // 2. Mostrar Login
+                    const loginModal = document.getElementById('sys-login');
+                    loginModal.classList.remove('hidden');
+                    
+                    // 3. Enfocar Login
+                    setTimeout(() => document.getElementById('sys-user').focus(), 100);
+                    return;
+                }
+
                 if (command) {
-                    // Show command
                     const cmdLine = document.createElement('div');
-                    cmdLine.innerHTML = `<span class="timestamp">[${new Date().toISOString().slice(0, 19).replace('T', ' ')} UTC]</span><br>deck3@junction37:~$ ${command}`;
+                    cmdLine.innerHTML = `<span class="timestamp">[LOG]</span> deck3:~$ ${command}`;
                     output.appendChild(cmdLine);
 
-                    // Show response
                     const responseLine = document.createElement('div');
                     if (responses[command]) {
                         responseLine.innerHTML = responses[command];
                     } else {
-                        responseLine.innerHTML = `<span class="error">Command not found: ${command}</span>\nType 'help' for available commands`;
+                        responseLine.innerHTML = `<span class="error">Error: ${command}</span>`;
                     }
                     output.appendChild(responseLine);
-
-                    commandHistory.push(command);
+                    
+                    // Fix para reproducir audio
+                    const audioEl = responseLine.querySelector('audio');
+                    if(audioEl) audioEl.play().catch(e => console.log("Audio requires interaction"));
                 }
-
                 input.value = '';
-                terminal.scrollTop = terminal.scrollHeight;
+                setTimeout(() => { terminal.scrollTop = terminal.scrollHeight; }, 10);
             }
         });
 
-        // Auto-scroll
-        const terminal = document.getElementById('terminal');
-        terminal.scrollTop = terminal.scrollHeight;
+        // --- LÓGICA DEL LOGIN (BUCLE INFINITO) ---
+        const sysPass = document.getElementById('sys-pass');
+        const sysUser = document.getElementById('sys-user');
 
-        // Random glitch effect
-        setInterval(() => {
-            if (Math.random() < 0.1) {
-                document.body.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
+        // Al dar enter en el usuario, pasar al password
+        sysUser.addEventListener('keydown', function(e) {
+            if(e.key === 'Enter') sysPass.focus();
+        });
+
+        // Al dar enter en el password, fallar siempre
+        sysPass.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const msg = document.getElementById('login-msg');
+                msg.innerHTML = '<span class="warning" style="color:#ff0">AUTHENTICATING...</span>';
+                
+                // Deshabilitar inputs mientras "piensa"
+                sysUser.disabled = true;
+                sysPass.disabled = true;
+
                 setTimeout(() => {
-                    document.body.style.transform = 'translate(0, 0)';
-                }, 50);
+                    msg.innerHTML = '<span class="error">ACCESS DENIED. INVALID CREDENTIALS.</span>';
+                    
+                    // Resetear para que sufran de nuevo
+                    setTimeout(() => {
+                        msg.innerHTML = '';
+                        sysUser.value = '';
+                        sysPass.value = '';
+                        sysUser.disabled = false;
+                        sysPass.disabled = false;
+                        sysUser.focus();
+                    }, 2000);
+                    
+                }, 1500); 
             }
-        }, 2000);
+        });
 
-        // Easter egg after 30 seconds
+        // Evento aleatorio (Susto)
         setTimeout(() => {
             const glitchMsg = document.createElement('div');
             glitchMsg.className = 'line error';
-            glitchMsg.innerHTML = '<br><span class="error">⚠⚠⚠ PROXIMITY ALERT ⚠⚠⚠</span><br><span class="error">Something is moving in the pipes above you</span><br><span class="error">Distance: 3.2 meters</span><br><span class="error">Distance: 2.1 meters</span><br><span class="error">Distance: 0.8 meters</span><br>';
+            glitchMsg.innerHTML = '<br><span class="error">⚠ PROXIMITY ALERT: 0.8 meters</span>';
             output.appendChild(glitchMsg);
             terminal.scrollTop = terminal.scrollHeight;
-        }, 30000);
+        }, 20000);
     </script>
 </body>
-
 </html>
