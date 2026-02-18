@@ -1,318 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.S. ETERNAL MERIDIAN - DECK 3 TERMINAL [LIVE]</title>
+    <title>FATAL EXCEPTION: CORE_DUMP_2026</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-        /* --- RESET Y BASE --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* --- RESET & BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            background: #000;
-            color: #0f0;
-            font-family: 'VT323', monospace;
-            font-size: 18px;
-            line-height: 1.4;
+            background: #050505;
+            color: #d4d4d4; /* Blanco sucio/gris para realismo */
+            font-family: 'Share Tech Mono', monospace; /* Fuente más técnica/cruda */
+            font-size: 16px;
+            line-height: 1.5;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
         }
 
-        /* --- TERMINAL CONTAINER --- */
-        #terminal {
+        /* --- LAYOUT --- */
+        #crash-container {
             padding: 20px;
             height: 100%;
             width: 100%;
             overflow-y: auto;
             position: relative;
-            z-index: 1;
+            z-index: 10;
         }
 
-        /* --- EFECTOS VISUALES (SCANLINES) --- */
-        .scanline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom,
-                    rgba(0, 255, 0, 0) 50%,
-                    rgba(0, 255, 0, 0.02) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 999;
-            animation: scan 8s linear infinite;
-        }
-
-        @keyframes scan {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 100%; }
-        }
-
-        .glitch { animation: glitch-anim 3s infinite; }
-        @keyframes glitch-anim {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        /* --- ESTILOS DE TEXTO --- */
-        .header {
-            border: 2px solid #0f0;
-            padding: 10px;
+        /* --- ESTILOS DE TEXTO & GLITCH --- */
+        .header-crash {
+            border-bottom: 2px solid #ff3333;
             margin-bottom: 20px;
-            text-align: center;
+            padding-bottom: 10px;
         }
 
-        .ascii-art {
-            white-space: pre;
-            overflow-x: auto;
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 12px;
+        .title-glitch {
+            color: #ff3333;
+            font-size: 1.4em;
+            text-transform: uppercase;
+            animation: text-flicker 3s infinite;
         }
-        .ascii-art::-webkit-scrollbar { display: none; }
 
-        .error { color: #f00; text-shadow: 0 0 5px #f00; }
-        .warning { color: #ff0; }
-        .timestamp { color: #0a0; font-size: 0.8em; }
-        .line { margin: 5px 0; word-wrap: break-word; }
+        .meta-info {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .redacted {
+            background: #d4d4d4;
+            color: #050505;
+            padding: 0 2px;
+            cursor: help;
+        }
+        
+        .redacted:hover {
+            background: #ff3333;
+            color: #000;
+        }
+
+        .block-censor {
+            color: #d4d4d4;
+            letter-spacing: -2px;
+        }
+
+        .error-text { color: #ff3333; }
+        .system-text { color: #00ff41; }
+        .warning-text { color: #ffcc00; }
+        .dim-text { color: #555; }
 
         /* --- INPUT AREA --- */
         #input-line {
             display: flex;
             margin-top: 20px;
-            padding-bottom: 50px;
+            padding-bottom: 80px;
+            border-top: 1px dashed #333;
+            padding-top: 10px;
         }
 
-        #prompt { color: #0f0; white-space: nowrap; margin-right: 8px; }
+        #prompt { color: #ff3333; margin-right: 10px; }
 
         #user-input {
             background: transparent;
             border: none;
-            color: #0f0;
-            font-family: 'VT323', monospace;
-            font-size: 18px;
-            outline: none;
+            color: #d4d4d4;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
             flex: 1;
+            outline: none;
         }
 
-        /* --- ESTILOS DEL POPUP DE LOGIN --- */
-        #sys-login {
+        /* --- ANIMACIONES --- */
+        @keyframes text-flicker {
+            0% { opacity: 1; }
+            5% { opacity: 0.1; }
+            10% { opacity: 1; }
+            30% { opacity: 1; }
+            35% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        /* --- EL "TRAP" (LOGIN DE EMERGENCIA) --- */
+        #bios-lock {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000080; /* Pantalla Azul de la Muerte clásica */
+            color: #fff;
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        .login-box {
-            border: 2px solid #f00;
-            padding: 20px;
-            background: #000;
+        .bios-box {
             width: 90%;
-            max-width: 400px;
-            box-shadow: 0 0 20px #f00;
-            text-align: center;
-            font-family: 'VT323', monospace;
+            max-width: 600px;
+            border: 2px solid #fff;
+            padding: 20px;
+            box-shadow: 10px 10px 0 #000;
         }
 
-        .login-header {
-            color: #f00;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #f00;
-            padding-bottom: 10px;
-            animation: blink 1s infinite;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .input-group label {
-            color: #f00;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .login-input {
+        .bios-input {
+            background: #000080;
+            border: none;
+            border-bottom: 2px solid #fff;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.2em;
             width: 100%;
-            background: #110000;
-            border: 1px solid #f00;
-            color: #f00;
-            padding: 8px;
-            font-family: 'VT323', monospace;
-            font-size: 18px;
+            margin-top: 10px;
             outline: none;
         }
 
         .hidden { display: none !important; }
 
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-        @media (max-width: 600px) {
-            body { font-size: 16px; }
-            .header { font-size: 0.8em; }
-            #input-line { flex-direction: column; }
-            #user-input { margin-top: 5px; width: 100%; }
-        }
     </style>
 </head>
-
 <body>
-    <div class="scanline"></div>
 
-    <div id="terminal" onclick="document.getElementById('user-input').focus()">
+    <div id="crash-container" onclick="document.getElementById('user-input').focus()">
         
-        <div id="main-header" class="header glitch">
-            <div class="ascii-art">
-╔════════════════════════════════════════╗
-║ S.S. ETERNAL MERIDIAN - TERMINAL v2.4  ║
-║ DECK 3 - NODE: 0x2F91 [UNAUTHORIZED]   ║
-╚════════════════════════════════════════╝
+        <div class="header-crash">
+            <div class="title-glitch">
+                *** SYSTEM FAILURE: KERNEL PANIC ***<br>
+                ERROR CODE: 0x8841A3 [BIOLOGICAL_REJECTION]
             </div>
-            <div class="error">⚠ UNAUTHORIZED ACCESS DETECTED ⚠</div>
+            <div class="meta-info">
+                > DUMP_ID: <span class="block-censor">████████</span>-X<br>
+                > LOCATION: CORDOBA_ARG [REALTIME_FEED]<br>
+                > DATE: <script>document.write(new Date().toLocaleDateString())</script><br>
+                > STATUS: <span class="error-text">UNSTABLE // DATA HAEMORRHAGE</span>
+            </div>
         </div>
 
-        <div id="boot-sequence">
-            <div class="line timestamp">[2004-06-15 03:47:12 UTC]</div>
-            <div class="line">SYSTEM BOOT... OK</div>
-            <div class="line">LOADING SENSOR DATA...</div>
-            <div class="line"><span class="warning">WARNING: 8/12 THERMAL SENSORS OFFLINE</span></div>
-            <div class="line"><span class="warning">WARNING: ACOUSTIC ANOMALY DETECTED</span></div>
-            <div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-            <div class="line">&nbsp;</div>
-
-            <div class="line">AVAILABLE COMMANDS:</div>
-            <div class="line"> status - Check system status</div>
-            <div class="line"> sensors - View sensor readings</div>
-            <div class="line"> logs - Access maintenance logs</div>
-            <div class="line"> thermal - Thermal camera feed</div>
-            <div class="line"> audio - Audio monitoring</div>
-            <div class="line"> help - Show this menu</div>
-            <div class="line"> exit - Abort session</div>
-            <div class="line">&nbsp;</div>
+        <div id="output">
+            <div class="dim-text">Initializing recovery environment...</div>
+            <div class="dim-text">Loading memory fragments... [FAILED]</div>
+            <div class="dim-text">Mounting biological drive (C:)... <span class="error-text">CORRUPTED</span></div>
+            <br>
+            <div class="system-text">
+                [||||||||||..........] 50% RECOVERED<br>
+                [////////////////////] INDEXING...
+            </div>
+            <br>
+            <div>AVAILABLE DUMP COMMANDS:</div>
+            <div class="dim-text">--------------------------------</div>
+            <div>&nbsp;&nbsp;<span class="system-text">trace</span>&nbsp;&nbsp;&nbsp;&nbsp;> Locate source signal (IP/Geo)</div>
+            <div>&nbsp;&nbsp;<span class="system-text">memory</span>&nbsp;&nbsp;&nbsp;> Read raw text fragments</div>
+            <div>&nbsp;&nbsp;<span class="system-text">evidence</span>&nbsp;> Audio/Visual dump</div>
+            <div>&nbsp;&nbsp;<span class="system-text">status</span>&nbsp;&nbsp;&nbsp;> Subject vitals</div>
+            <div>&nbsp;&nbsp;<span class="error-text">exit</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;> Abort connection</div>
+            <div class="dim-text">--------------------------------</div>
+            <br>
+            <div class="warning-text">WARNING: CONTENT IS UNFILTERED. NOTHING IS SIMULATED.</div>
+            <br>
         </div>
-
-        <div id="output"></div>
 
         <div id="input-line">
-            <span id="prompt">deck3@junction37:~$</span>
-            <input type="text" id="user-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+            <span id="prompt">admin@recovery:~$</span>
+            <input type="text" id="user-input" autocomplete="off" autofocus>
         </div>
+
     </div>
 
-    <div id="sys-login" class="hidden">
-        <div class="login-box">
-            <div class="login-header">⚠ SYSTEM REBOOT REQUIRED ⚠</div>
-            <div class="line" style="color: #f00;">ADMIN CREDENTIALS REQUIRED TO ABORT</div>
+    <div id="bios-lock" class="hidden">
+        <div class="bios-box">
+            <div style="text-align: center; margin-bottom: 20px; background: #fff; color: #000080; font-weight: bold;">
+                SYSTEM HALT
+            </div>
+            <p>A fatal exception 0E has occurred at <span class="block-censor">████</span>:C0034B.</p>
+            <p>The current application cannot be terminated.</p>
             <br>
-            <div class="input-group">
-                <label>USER ID:</label>
-                <input type="text" id="sys-user" class="login-input" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <label>PASSWORD:</label>
-                <input type="password" id="sys-pass" class="login-input" autocomplete="off">
-            </div>
-            <div id="login-msg" class="line"></div>
+            <p class="warning-text" style="color:#ff0;">> CANNOT DISCONNECT BIOLOGICAL LINK.</p>
+            <p class="warning-text" style="color:#ff0;">> YOU ARE ALREADY PART OF THE DATASET.</p>
+            <br>
+            <p>ENTER ADMINISTRATOR PASSWORD TO FORCE REBOOT:</p>
+            <input type="password" id="sys-pass" class="bios-input">
+            <div id="bios-msg" style="margin-top: 10px; height: 20px;"></div>
         </div>
     </div>
 
     <script>
         const output = document.getElementById('output');
         const input = document.getElementById('user-input');
-        const terminal = document.getElementById('terminal');
-        const header = document.getElementById('main-header');
-        const boot = document.getElementById('boot-sequence');
+        const crashContainer = document.getElementById('crash-container');
+        const biosLock = document.getElementById('bios-lock');
+        const sysPass = document.getElementById('sys-pass');
+        const biosMsg = document.getElementById('bios-msg');
 
-        document.addEventListener('click', function() {
-            if(document.getElementById('sys-login').classList.contains('hidden')){
-                input.focus();
-            }
-        });
-
+        // Respuestas "Raw" / Documentales
         const responses = {
+            'trace': `
+<div class="system-text">> TRACING SIGNAL SOURCE...</div>
+<br>
+IP_ADDRESS: 181.16.<span class="block-censor">███.███</span> [ISP: TELECOM ARGENTINA]
+LOCATION: CORDOBA, PROVINCE [CONFIRMED]
+DEVICE: <span class="redacted">[REDACTED]</span> ANDROID HOST
+<br>
+<span class="dim-text">NOTE: Connection is direct. No VPN detected. Subject is exposed.</span>
+`,
+            'memory': `
+<div class="system-text">> ACCESSING HIPPOCAMPUS DUMP...</div>
+<br>
+[FRAGMENT 01]
+"They don't listen. They just record. The buffer is always open."
+<br>
+[FRAGMENT 02] <span class="error-text">CORRUPTED</span>
+"d̶a̶t̶a̶ ̶l̶o̶s̶t̶... waking up at 3AM... hearing the h̵e̷l̸p̶ ̷m̵e̸ in the static..."
+<br>
+[FRAGMENT 03]
+"It's not a ghost. It's just history repeating itself without context."
+<br>
+<span class="warning-text">[END OF READABLE SECTOR]</span>
+`,
+            'evidence': `
+<div class="system-text">> MOUNTING AUDIO DRIVE...</div>
+<br>
+FILE: amb_cordoba_night.wav
+SIZE: 14.2 MB
+TYPE: RAW_INPUT
+<br>
+<div class="dim-text">[||||||||||..........] LOADING...</div>
+<br>
+<span class="error-text">> ERROR: PLAYBACK DRIVER FAILED.</span>
+<span class="error-text">> FILE CONTAINS INFRASOUND ANOMALIES.</span>
+<br>
+<span class="dim-text">Subject note: "Recorded outside my window. That is not the wind."</span>
+`,
             'status': `
-<span class="timestamp">[LOG UPDATE]</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-<div class="line">SYSTEM STATUS - DECK 3</div>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-<span class="error">⚠ CRITICAL ALERTS: 3</span>
-Pipe Pressure: <span class="warning">ANOMALOUS</span>
-Temp (Sec 3-F): -7°C <span class="error">(ERROR)</span>
-Motion: <span class="error">NON-CREW MOVEMENT</span>
-Current Status: <span class="error">CREW MISSING</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>`,
-            
-            'sensors': `
-<span class="timestamp">[SENSOR READ]</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-Sensor 02: 19.2°C
-Sensor 06: 12.1°C <span class="warning">⚠ COLD</span>
-Sensor 08: <span class="error">7.3°C ⚠ CRITICAL</span>
-<span class="warning">HEAT SIGNATURE DETECTED</span>
-Shape: ELONGATED (180cm)
-<span class="error">ERROR: NOT IN DATABASE</span>
-<div class="line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>`,
-
-            'logs': `
-<span class="timestamp">[ACCESSING LOGS...]</span>
-[06-14 22:47] Torres: "Breathing sound..."
-[06-15 14:23] Hendricks: "Black substance."
-[06-16 01:58] Torres: <span class="error">"FINGERS IN CEILING"</span>
-[06-16 03:47] <span class="error">YOU: UNAUTHORIZED</span>
-<span class="error">WARNING: You should not be here</span>`,
-
-            'thermal': `
-<span class="timestamp">[CAM FEED 03]</span>
-<div class="ascii-art">
-<span class="error">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░█████░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░░░█░░░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░░░██░██░░░░░░░░░░░░░░░░░░░░</span>
-<span class="error">░░░░░██░░░░░██░░░░░░░░░░░░░░░░░░</span>
-</div>
-<span class="warning">SHAPE: Humanoid?</span>
-<span class="error">ERROR: Limb count... INCORRECT</span>
-<span class="error">FEED TERMINATED</span>`,
-
-            'audio': `
-<span class="timestamp">[AUDIO FEED]</span>
-<span class="error">⚠ PLAYING LIVE FEED ⚠</span>
-00:19 <span class="warning">[BREATHING]</span>
-00:31 <span class="error">[METAL SCRAPING]</span>
-00:52 <span class="error">[WHISPER - "...torres..."]</span>
-00:54 <span class="error">█ [SUBSONIC PULSE] █</span>
-<span class="error">RECOMMENDATION: RUN</span>
-<audio id="pipe-audio" autoplay style="display:none">
-    <source src="PIPE_MONITORING_AUDIO.wav" type="audio/wav">
-</audio>`,
-            
-            'help': `
-COMMANDS:
- status, sensors, logs
- thermal, audio, help
- exit (Abort session)`
+<div class="system-text">> SUBJECT VITALS SCAN</div>
+<br>
+NAME: L██████ A. N██████
+STATUS: ALIVE / COMPROMISED
+LOC: CORDOBA
+<br>
+PSYCHE: <span class="error-text">UNSTABLE</span>
+DIGITAL FOOTPRINT: MASSIVE
+<br>
+<span class="warning-text">ALERT: Subject is aware of the simulation.</span>
+`
         };
 
         // --- MANEJO DE COMANDOS ---
@@ -320,115 +278,73 @@ COMMANDS:
             if (e.key === 'Enter') {
                 const command = input.value.trim().toLowerCase();
 
-                // >>> TRAMPA DE SALIDA <<<
+                // >>> TRAMPA DE SALIDA (BLUE SCREEN) <<<
                 if (command === 'exit') {
-                    header.style.display = 'none';
-                    boot.style.display = 'none';
-                    output.innerHTML = '';
-                    document.getElementById('input-line').style.display = 'none';
-                    
-                    const loginModal = document.getElementById('sys-login');
-                    loginModal.classList.remove('hidden');
-                    
-                    setTimeout(() => document.getElementById('sys-user').focus(), 100);
+                    crashContainer.classList.add('hidden'); // Ocultar terminal
+                    biosLock.classList.remove('hidden');    // Mostrar BSOD
+                    setTimeout(() => sysPass.focus(), 100);
                     return;
                 }
 
                 if (command) {
+                    // Imprimir comando usuario
                     const cmdLine = document.createElement('div');
-                    cmdLine.innerHTML = `<span class="timestamp">[LOG]</span> deck3:~$ ${command}`;
+                    cmdLine.innerHTML = `<br><span class="error-text">root@dump:~$</span> ${command}`;
                     output.appendChild(cmdLine);
 
+                    // Respuesta
                     const responseLine = document.createElement('div');
                     if (responses[command]) {
                         responseLine.innerHTML = responses[command];
                     } else {
-                        responseLine.innerHTML = `<span class="error">Error: ${command}</span>`;
+                        // Error estilo glitch
+                        responseLine.innerHTML = `<span class="error-text">{ERROR: 0x80004005}</span> COMMAND_NOT_RECOGNIZED`;
                     }
                     output.appendChild(responseLine);
-                    
-                    const audioEl = responseLine.querySelector('audio');
-                    if(audioEl) audioEl.play().catch(e => console.log("Audio requires interaction"));
                 }
+                
                 input.value = '';
-                setTimeout(() => { terminal.scrollTop = terminal.scrollHeight; }, 10);
+                // Auto-scroll al fondo
+                setTimeout(() => {
+                    crashContainer.scrollTop = crashContainer.scrollHeight;
+                }, 10);
             }
         });
 
-        // --- LÓGICA DEL LOGIN (CON ADMIN/ADMIN) ---
-        const sysPass = document.getElementById('sys-pass');
-        const sysUser = document.getElementById('sys-user');
-
-        sysUser.addEventListener('keydown', function(e) {
-            if(e.key === 'Enter') sysPass.focus();
-        });
-
+        // --- LÓGICA DEL LOGIN (BACKDOOR) ---
         sysPass.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
-                const msg = document.getElementById('login-msg');
-                msg.innerHTML = '<span class="warning" style="color:#ff0">AUTHENTICATING...</span>';
+                const pass = sysPass.value.trim();
                 
-                // Bloquear inputs
-                sysUser.disabled = true;
-                sysPass.disabled = true;
-                
-                // Obtener valores
-                const u = sysUser.value.trim();
-                const p = sysPass.value.trim();
+                biosMsg.innerHTML = 'VERIFYING HASH...';
 
                 setTimeout(() => {
-                    // --- AQUÍ ESTÁ LA MAGIA DEL ADMIN ---
-                    if (u === 'admin' && p === 'admin') {
-                        // ÉXITO
-                        msg.innerHTML = '<span class="timestamp" style="color:#0f0">ACCESS GRANTED. RELOADING...</span>';
-                        
+                    if (pass === 'admin') {
+                        // ÉXITO (Volver a la terminal)
+                        biosMsg.innerHTML = '<span style="color:#0f0">OVERRIDE ACCEPTED. REBOOTING...</span>';
                         setTimeout(() => {
-                            // 1. Ocultar Login
-                            document.getElementById('sys-login').classList.add('hidden');
-                            
-                            // 2. Restaurar Pantalla
-                            header.style.display = 'block';
-                            boot.style.display = 'block';
-                            document.getElementById('input-line').style.display = 'flex';
-                            
-                            // 3. Mensaje de bienvenida
-                            output.innerHTML = '<br><div class="line timestamp" style="color:#0f0">[SYSTEM] ROOT PRIVILEGES RESTORED.</div><div class="line">Welcome back, Administrator.</div><br>';
-                            
-                            // 4. Limpiar
-                            sysUser.value = '';
-                            sysPass.value = '';
-                            sysUser.disabled = false;
-                            sysPass.disabled = false;
-                            msg.innerHTML = '';
-                            
-                            // 5. Enfocar terminal
+                            biosLock.classList.add('hidden');
+                            crashContainer.classList.remove('hidden');
                             input.focus();
+                            // Mensaje de éxito en terminal
+                            const resetMsg = document.createElement('div');
+                            resetMsg.innerHTML = '<br><span class="system-text">> SESSION RESTORED BY ADMIN.</span><br>';
+                            output.appendChild(resetMsg);
+                            crashContainer.scrollTop = crashContainer.scrollHeight;
                         }, 1000);
-
+                        sysPass.value = '';
                     } else {
                         // FALLO (Bucle infinito)
-                        msg.innerHTML = '<span class="error">ACCESS DENIED. INVALID CREDENTIALS.</span>';
-                        
-                        setTimeout(() => {
-                            msg.innerHTML = '';
-                            sysUser.value = '';
-                            sysPass.value = '';
-                            sysUser.disabled = false;
-                            sysPass.disabled = false;
-                            sysUser.focus();
-                        }, 2000);
+                        biosMsg.innerHTML = '<span style="color:#f00">ACCESS DENIED. SYSTEM HALTED.</span>';
+                        sysPass.value = '';
+                        // Temblor de pantalla
+                        biosLock.style.transform = "translate(2px, 2px)";
+                        setTimeout(() => biosLock.style.transform = "translate(0, 0)", 100);
                     }
-                }, 1500); 
+                }, 800);
             }
         });
 
-        setTimeout(() => {
-            const glitchMsg = document.createElement('div');
-            glitchMsg.className = 'line error';
-            glitchMsg.innerHTML = '<br><span class="error">⚠ PROXIMITY ALERT: 0.8 meters</span>';
-            output.appendChild(glitchMsg);
-            terminal.scrollTop = terminal.scrollHeight;
-        }, 20000);
     </script>
 </body>
 </html>
